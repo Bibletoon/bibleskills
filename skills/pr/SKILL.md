@@ -11,7 +11,8 @@ metadata:
 
 Use this template for writing the PR body:
 
-```markdown
+<pr-template>
+
 ## Summary
 
 <diagram, diff-sketch, or tree>
@@ -30,11 +31,12 @@ Use this template for writing the PR body:
 **Blast Radius:** <one-word description>
 
 <optional: potential ramifications of merge>
-```
+
+</pr-template>
 
 ## Sections
 
-Skip all preambles and keep prose brief. Use the user's domain language from `GLOSSARY.md`.
+Skip all preambles and keep prose brief. Use the user's domain language from `.agent-docs/GLOSSARY.md`.
 
 ### Summary
 

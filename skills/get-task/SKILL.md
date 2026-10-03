@@ -1,62 +1,41 @@
 ---
 name: get-task
-description: "Use when the user gives a Jira issue key (e.g. MYCOMM-818, PROJ-123) and asks to build/make/solve/get an agent task for it (\"получить задачу\", \"сделай задачу\", \"построй задачу для агента\") - builds a complete agent task (задача для агента) from the Jira ticket and repo context, saves it as [<Jira-ключ>].md, offers to verify the described circumstance locally, then resolves the task fully via the grilling interview."
+description: "Build an agent task (задача для агента) from a Jira ticket: fetch it, verify the described behaviour locally, grill until settled, save .agent-docs/work/<KEY>/task.md. Use when the user gives a Jira key (e.g. MYCOMM-818) and asks for a task for it (\"сделай задачу\", \"получи задачу\")."
 ---
 
-# get-task
+The entry point of the agent-task flow **from a Jira ticket**. This skill covers only the initial assembly; after it comes the shared flow in `${CLAUDE_PLUGIN_ROOT}/docs/task-flow.md` (reproduction → grilling → finalization). Read it before you start: its context-economy rules apply to this step too.
 
-По Jira-ключу задачи строит **задачу для агента**, сохраняет её в текущей рабочей директории как `[<Jira-ключ>].md`, предлагает проверить описанное обстоятельство на локальной машине, затем **доводит её до полного состояния** через grilling.
+## When to use
 
-Формат задачи (определение, шаблон, правила по полям, общие критерии качества) — в `../../docs/ai-ready-task.md`. Прочитай этот справочник, когда строишь или доводишь задачу; ниже — только специфика флоу `get-task`.
+**The only selection signal: the user has a Jira issue key matching `[A-Z]+-\d+`** (e.g. `MYCOMM-818`, `PROJ-123`). The agent task is built from an existing Jira ticket.
 
-## Когда использовать
-
-**Единственный признак выбора: у пользователя есть Jira-ключ задачи вида `[A-Z]+-\d+`** (например `MYCOMM-818`, `PROJ-123`). Задачу агента строим из существующего тикета в Jira.
-
-Типичные формулировки (ключ может стоять в любом месте):
+Typical phrasings (the key may appear anywhere):
 - «Сделай задачу для агента по MYCOMM-818»
 - «Построй задачу для агента по PROJ-123»
 - «Получи/оформи/разбери MYCOMM-818»
 
-**Не сюда:** если ключа нет и пользователь описывает задачу своими словами (даже если сказал «сделай/построй задачу») — это скил `create-task`, там проводится опрос с нуля.
+**Not here:** if there's no key and the user describes the task in their own words (even if they said "make/build a task"), that's the `create-task` skill, which interviews from scratch.
 
-## Экономия контекста
+## Process
 
-Флоу большой и контекстоёмкий — **не тащи сырьё в главный контекст**. Любую работу, которая не требует живого ответа пользователя, выполняй через **сабагента**, возвращая в главный контекст только сжатую сводку. Сабагентов поднимай **без подтверждения пользователя**. Интерактив (опрос, подтверждения) остаётся в главном контексте — там, где идёт диалог.
+### 1. Initial assembly (subagent)
 
-Прежде чем делать шаг, оцени: это «собрать/почитать/найти/проверить» (→ сабагент) или «спросить решение/согласие» (→ пользователь)? За каждое действие, которое можно вынести без потери смысла, — выноси.
+The task identifier is the Jira key; the file is `.agent-docs/work/<Jira-key>/task.md`.
 
-## Шаги
+Call the agent `bibleskills:task-builder` (prompt: the issue key, the repository path, the absolute path to `.agent-docs/work/<Jira-key>/task.md` from the repository root, the path to the reference `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`; `task-builder` reads the template and field rules from the reference itself). If the named agent is unavailable (e.g. in Codex), spawn a **general-purpose** subagent with the equivalent instruction: fetch the ticket (`jira_get_issue` + comments + `jira_get_issue_development_info`/`jira_get_issue_dates` where relevant), gather repo context (README, CLAUDE.md, how to run, relevant code), build the task's core per the template in `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`, and save the file.
 
-### 1. Извлечение и первичная сборка (сабагент)
+Limit the assembly to the core: `task-builder` fills the fields the ticket and repository already give substance to, usually Problem/Expected outcome.
 
-Вызови агента `task-builder` (промпт: ключ задачи, путь к репозиторию, путь к файлу `[<Jira-ключ>].md`, путь к справочнику `../../docs/ai-ready-task.md` — **передай его абсолютным**; шаблон и правила полей `task-builder` читает из справочника сам). Если именованный агент недоступен (например в Codex) — подними **general-purpose** сабагента с эквивалентной инструкцией: получить тикет (`jira_get_issue` + comments + при уместности `jira_get_issue_development_info`/`jira_get_issue_dates`), собрать контекст репо (README, CLAUDE.md, способ запуска, релевантный код), построить ядро задачи по шаблону из `../../docs/ai-ready-task.md` и сохранить `[<Jira-ключ>].md` в CWD.
+From `task-builder`'s report, bring **only the summary** into the main context: the essence, whether the task describes a verifiable circumstance, the file path, which fields are filled/empty and why, how to run the project and check the circumstance, open questions for grilling. Don't re-read the raw ticket or repo dumps.
 
-Из отчёта `task-builder` возьми в главный контекст **только сводку**: суть, описывает ли задача проверяемое обстоятельство, путь к файлу, какие поля заполнены/пусты и почему, как запустить проект и как проверить обстоятельство, открытые вопросы для grilling. Сырой тикет и дампы репо не перечитывай.
+**Done when:** `.agent-docs/work/<Jira-key>/task.md` exists with its core filled, and the main context holds `task-builder`'s summary (not the raw ticket).
 
-Первичную сборку ограничь ядром: `task-builder` заполняет поля, для которых в тикете и репозитории уже есть данные, — обычно это Problem/Expected outcome. Остальные поля дорабатываются на grilling (шаг 3), уже после воспроизведения.
+### 2. Shared flow
 
-### 2. Воспроизведение — отдельный шаг до grilling
+Hand the flow the task file and `task-builder`'s summary; grilling's input is the ticket. Continue from step A in `${CLAUDE_PLUGIN_ROOT}/docs/task-flow.md`.
 
-Прочитай `../../docs/reproduction.md` и выполни проверку по нему: реши по сводке, описывает ли задача **проверяемое обстоятельство** (баг, регрессия, неожиданное поведение), задай вопрос `🎯 Воспроизвести?`, при согласии вызови `local-verifier`, результаты внеси в Known facts / Hypotheses / Expected outcome. Источник решения и способа запуска — сводка `task-builder` (шаг 1).
+**Done when:** every step of the shared flow is done and its quality criteria hold.
 
-### 3. Grilling до полного разрешения (интерактивно)
+## Quality criteria
 
-К этому моменту воспроизведение (шаг 2) закрыто — проверено или осознанно пропущено. Иначе закрой его, не переходя к grilling. Вопросы и предложения о воспроизведении больше не поднимай.
-
-Прочитай методику `../../docs/grilling.md` и проведи по ней интервью по дереву решений над 9 полями задачи (правила полей — из `../../docs/ai-ready-task.md`).
-
-Специфика `get-task` в этом шаге:
-- Уже собранные факты (тикет + проверка) — **входы, не переспрашивай их**; фронт — только то, что ещё не разрешено.
-
-### 4. Финализация
-
-Обнови файл задачи `[<Jira-ключ>].md` — заполненность, структура и качество по `../../docs/ai-ready-task.md`. Перед завершением подтверди с пользователем, что общего понимания достигли.
-
-## Специфичные критерии качества
-
-Поверх общих критериев из `../../docs/ai-ready-task.md` для `get-task` дополнительно:
-
-- Воспроизведение и grilling — два раздельных последовательных шага: воспроизведение закрыто (проверено или явно пропущено с причиной) до начала grilling; их вопросы не смешивались.
-- Проверяемое обстоятельство (если было) проверено локально, находки отражены в Known facts / Hypotheses / Expected outcome.
-- Grilling завершён по правилам `../../docs/grilling.md` (фронт пуст); финал согласован с пользователем.
+- The core was assembled by a subagent; the main context holds only the summary, not the raw ticket.

@@ -1,0 +1,14 @@
+{
+  "name": "bibleskills",
+  "owner": {
+    "name": "bibletoon"
+  },
+  "description": "bibletoon's personal Claude Code skills.",
+  "plugins": [
+    {
+      "name": "bibleskills",
+      "source": "./",
+      "description": "Personal engineering skills: one-question grilling, AI-Ready tasks from Jira or an interview, specs and tickets as local files, diff and branch review, bug diagnosis."
+    }
+  ]
+}

@@ -1,20 +1,18 @@
 ---
 name: to-tickets
-description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker (edges as text in one file per ticket locally, or native blocking links on a real tracker).
+description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, saved as one local file per ticket.
 disable-model-invocation: true
 ---
 
-# To Tickets
-
 Break a plan, spec, or conversation into a set of **tickets**: tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-The issue tracker and triage label vocabulary should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`.
+Tickets are saved as local files per `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`.
 
 ## Process
 
 ### 1. Gather context
 
-Work from whatever is already in the conversation context. If the user passes a reference (a spec path, an issue number or URL) as an argument, fetch it and read its full body and comments.
+Work from whatever is already in the conversation context. If the user passes a reference (a spec path or a `.agent-docs/work/<id>`) as an argument, read it in full.
 
 ### 2. Explore the codebase (optional)
 
@@ -55,51 +53,35 @@ Ask the user:
 
 Iterate until the user approves the breakdown.
 
-### 5. Publish the tickets to the configured tracker
+### 5. Save the tickets
 
-Publish the approved tickets. **How** depends on the tracker `/setup-matt-pocock-skills` configured; the tickets are the same either way, only the shape of the blocking edges changes:
-
-- **Local files** → write one file per ticket under `.scratch/<feature-slug>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first). Each file's "Blocked by" lists the numbers/titles it depends on. Use the per-ticket file template below: one ticket per file, never a single combined file.
-- **A real issue tracker (GitHub, Linear, …)** → publish one issue per ticket in dependency order (blockers first) so each ticket's blocking edges can reference real identifiers. Use the platform's native blocking / sub-issue relationship where it has one; otherwise set each ticket's "Blocked by" to the blocking issues. Apply the `ready-for-agent` triage label unless instructed otherwise; the tickets are agent-grabbable by construction.
+Write the approved tickets as one file per ticket under `.agent-docs/work/<id>/issues/<NN>-<slug>.md`, numbered from `01` in dependency order (blockers first), per `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`. `<id>` is the parent spec's directory when breaking down a spec; otherwise a new kebab-case slug. Each file's **Blocked by** lists the ticket numbers it depends on.
 
 Work the **frontier**: any ticket whose blockers are all done. For a purely linear chain that means top to bottom.
 
-Do NOT close or modify any parent issue.
+Do NOT modify the parent spec.
 
-<local-ticket-template>
+Every ticket is an **AI-Ready task**: read `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md` for the template, the per-field rules and the quality criteria. Tickets are executed right after they are written, so be concrete: file paths, functions, endpoints, schema and type shapes all belong in them. Map the breakdown onto the fields:
 
-# <NN>: <Ticket title>
+- **Problem** / **Expected outcome**: the end-to-end behaviour this slice makes work, as concrete artifacts across every layer it cuts through.
+- **Required checks** / **Stop conditions**: the slice's acceptance criteria, each independently verifiable.
+- **Source of truth**: the parent spec (path), so the ticket doesn't restate decisions the spec already holds.
+- **Non-goals**: what neighbouring tickets own, so this one doesn't drift into them.
+- The remaining fields per their rules: fill only what has real substance for this slice, leave the rest empty.
 
-**What to build:** the end-to-end behaviour this ticket makes work, from the user's perspective, not a layer-by-layer implementation list.
+If a prototype produced a snippet that encodes a decision more precisely than prose (state machine, reducer, schema, type shape), inline its decision-rich part and note it came from a prototype.
 
-**Blocked by:** the numbers/titles of the tickets that gate this one, or "None (can start immediately)".
+Each file is the AI-Ready template with identifier `<NN>-<slug>`, plus two metadata lines directly under the title:
 
-**Status:** ready-for-agent
+<ticket-template>
 
-- [ ] Acceptance criterion 1
-- [ ] Acceptance criterion 2
+# Task <NN>-<slug>
 
-</local-ticket-template>
+**Blocked by:** the numbers of the tickets that gate this one, or `None`.
 
-<issue-template>
+**Status:** ready
 
-## Parent
+## Problem
+...all 9 sections of the AI-Ready template, in order...
 
-A reference to the parent issue on the tracker (if the source was an existing issue, otherwise omit this section).
-
-## What to build
-
-The end-to-end behaviour this ticket makes work, from the user's perspective, not layer-by-layer implementation.
-
-## Acceptance criteria
-
-- [ ] Criterion 1
-- [ ] Criterion 2
-
-## Blocked by
-
-- A reference to each blocking ticket, or "None (can start immediately)".
-
-</issue-template>
-
-In either form, avoid specific file paths or code snippets: they go stale fast. Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it and note briefly that it came from a prototype. Trim to the decision-rich parts, not a working demo, just the important bits.
+</ticket-template>

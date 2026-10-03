@@ -1,85 +1,61 @@
 ---
 name: create-task
-description: "Use when the user has NO Jira key and describes the task in their own words (\"создай задачу для агента\", \"оформи задачу: <описание>\") - builds a complete agent task (задача для агента) from a live interview with the user, saves it as [<идентификатор>].md, offers to verify the described circumstance locally, then resolves the task fully via the grilling interview."
+description: "Build an agent task (задача для агента) by interviewing the user: gather the core, verify the described behaviour locally, grill until settled, save .agent-docs/work/<id>/task.md. Use when there is no Jira key and the user describes the task in their own words (\"создай задачу для агента\", \"оформи задачу: …\")."
 ---
 
-# create-task
+The entry point of the agent-task flow **from interviewing the user**. This skill covers only the initial assembly; after it comes the shared flow in `${CLAUDE_PLUGIN_ROOT}/docs/task-flow.md` (reproduction → grilling → finalization). Read it before you start: its context-economy rules apply to this step too.
 
-По итогам **опроса пользователя** строит **задачу для агента**, сохраняет её в текущей рабочей директории как `[<идентификатор>].md`, предлагает проверить описанное обстоятельство на локальной машине, затем **доводит её до полного состояния** через grilling.
+## When to use
 
-Формат задачи (определение, шаблон, правила по полям, общие критерии качества) — в `../../docs/ai-ready-task.md`. Прочитай этот справочник, когда строишь или доводишь задачу; ниже — только специфика флоу `create-task`.
+**The only selection signal: the user has NO Jira issue key matching `[A-Z]+-\d+`, and describes the task in their own words.** The agent task is built from scratch through an interview.
 
-## Когда использовать
-
-**Единственный признак выбора: у пользователя НЕТ Jira-ключа вида `[A-Z]+-\d+`, а задача формулируется описанием своими словами.** Задачу агента строим с нуля через опрос.
-
-Типичные формулировки (без ключа):
+Typical phrasings (no key):
 - «Создай задачу для агента»
 - «Оформи задачу: <краткое описание>»
 - «Построй минималистичную задачу по моему описанию»
-- Пользователь словами описал, что нужно сделать, и ждёт, что ты расспросишь по форме
+- The user has described in words what needs doing and expects you to ask about it in a structured way
 
-**Не сюда:** если в запросе есть Jira-ключ вида `MYCOMM-818`/`PROJ-123` (даже вместе с описанием) — это скил `get-task`, там задача строится из тикета в Jira.
+**Not here:** if the request contains a Jira key like `MYCOMM-818`/`PROJ-123` (even alongside a description), that's the `get-task` skill, which builds the task from the Jira ticket.
 
-## Экономия контекста
+## Process
 
-Флоу большой и контекстоёмкий — **не тащи сырьё в главный контекст**. Любую работу, которая не требует живого ответа пользователя, выполняй через **сабагента**, возвращая в главный контекст только сжатую сводку. Сабагентов поднимай **без подтверждения пользователя**. Интерактив (опрос, подтверждения) остаётся в главном контексте — там, где идёт диалог.
+### 1. Structured interview
 
-Прежде чем делать шаг, оцени: это «собрать/почитать/найти/проверить» (→ сабагент) или «спросить решение/согласие» (→ пользователь)? За каждое действие, которое можно вынести без потери смысла, — выноси.
+The goal is to gather the task's **core** (field rules in `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`): enough to understand the essence and decide about reproduction. **Don't ask mechanically about all 9 fields in a row**: it's tiring and leads to box-ticking.
 
-## Шаги
+**The core (almost always required; when a field may stay empty, per the skip rules in `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`):**
+- **Problem**: what needs doing: the concrete action/artifact, the starting state.
+- **Expected outcome**: how to verify it's done: the artifact/format, the verification criterion.
 
-### 1. Проведи опрос по форме (первичная сборка)
+Plus the minimum reproduction needs: is there a **verifiable circumstance**, and if so, how the project runs (if it doesn't come up, find it in the repository with a subagent). Don't ask about the other 7 fields before grilling; if facts come up in the answers on their own, record them in the draft.
 
-Цель — собрать **ядро задачи** (правила полей — из `../../docs/ai-ready-task.md`), достаточное, чтобы понять суть и принять решение о воспроизведении (шаг 3). **Не спрашивай механически про все 9 полей подряд** — утомляет и заставляет заполнять «для галочки».
+**Phrase every interview question with ready answer options**, per the "Question format" section of the `grilling` skill (`${CLAUDE_PLUGIN_ROOT}/skills/grilling/SKILL.md`): marker, options, recommendation ➡️, **strictly one at a time**, via the `AskUserQuestion` tool, one question per call. The grilling interview itself comes later, in the shared flow; here, only the core. Options carry concrete candidates (artifacts, endpoints, functions, files, numbers), not "human" generalities ("improve orders" → "add a `status` field to GET /orders"). If the user is vague, translate it into specifics and ask them to confirm.
 
-**Ядро (обязательно почти всегда; когда поле можно не заполнять — по правилам пропуска в `../../docs/ai-ready-task.md`):**
-- **Problem** — что нужно сделать: конкретное действие/артефакт, начальное состояние.
-- **Expected outcome** — как проверить, что сделано: артефакт/формат, критерий проверяемости.
+**Done when:** Problem and Expected outcome are agreed in concrete terms, and you know whether there is a verifiable circumstance (and, if so, how the project runs).
 
-Плюс минимум, который нужен шагу 3 (воспроизведение): есть ли **проверяемое обстоятельство**. Остальные 7 полей до grilling не спрашивай; если факты прозвучали в ответах пользователя сами — зафиксируй их в черновике задачи (шаг 2).
+### 2. Identifier and draft
 
-**Формулируй все вопросы опроса с готовыми вариантами ответа** — формат по `../../docs/grilling.md` (маркер, варианты, рекомендация ➡️ — но без раундового интервью, оно будет в шаге 4) и задавай их **строго по одному за раз** — тулом `AskUserQuestion`, один вопрос за вызов (методика — в `../../docs/grilling.md`). Варианты несут конкретику-кандидаты (артефакты, эндпоинты, функции, файлы, числа), а не «человеческие» обобщения («улучшить заказы» → «добавить поле status в GET /orders»). Если пользователь говорит размыто — переведи на конкретику и переспроси подтверждение.
+The task identifier is **derived from the task's meaning**: a short, readable kebab-case slug that captures the essence (from the interview's core).
 
-### 2. Сформулируй идентификатор задачи и сохрани черновик
+- Latin letters, lowercase, words joined by `-`;
+- short (2–5 words), based on the task's core;
+- starts with a verb/action where it fits.
 
-Идентификатор задачи — **производное от смысла задачи**. Это краткий kebab-case слаг, читаемый и отражающий суть (по ядру из опроса); вид идентификатора — в `../../docs/ai-ready-task.md`.
+Examples: `add-status-to-orders`, `fix-outbox-duplicate`, `cart-checkout-cleanup`, `order-cancel-stock-release`.
 
-Правила:
-- латиница, нижний регистр, слова через `-`;
-- коротко (2–5 слов), по ядру задачи.
-- начинается с глагола/действия, если уместно.
+Propose the identifier as plain text and wait for confirmation or an edit before saving the file.
 
-Примеры: `add-status-to-orders`, `fix-outbox-duplicate`, `cart-checkout-cleanup`, `order-cancel-stock-release`.
+Save the draft per the template in `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md` (all 9 headings) as `.agent-docs/work/<id>/task.md`, with only the fields gathered in the interview filled in.
 
-Предложи идентификатор обычным текстом и дождись подтверждения или правки, прежде чем сохранять файл.
+**Done when:** the user has confirmed the identifier and the draft is saved.
 
-Сохрани черновик по шаблону из `../../docs/ai-ready-task.md` (все 9 заголовков): заполнены только поля, собранные в опросе; остальные поля доработает grilling в шаге 4.
+### 3. Shared flow
 
-Сохрани в **текущей рабочей директории** (CWD) как `[<идентификатор>].md`, например `add-status-to-orders.md`. Дальше собранные факты и результаты проверки вноси прямо в этот файл.
+Hand the flow the task file and a summary of the interview (essence, verifiable circumstance, run method); grilling's input is the interview answers. Continue from step A in `${CLAUDE_PLUGIN_ROOT}/docs/task-flow.md`.
 
-### 3. Воспроизведение — отдельный шаг до grilling
+**Done when:** every step of the shared flow is done and its quality criteria hold.
 
-Прочитай `../../docs/reproduction.md` и выполни проверку по нему: реши по ядру из опроса, описывает ли задача **проверяемое обстоятельство** (баг, регрессия, неожиданное поведение), задай вопрос `🎯 Воспроизвести?`, при согласии вызови `local-verifier`, результаты внеси в Known facts / Hypotheses / Expected outcome. Источник решения и способа запуска — ядро задачи и ответы опроса (шаг 1); если способ запуска не прозвучал — найди его в репозитории до вопроса.
+## Quality criteria
 
-### 4. Grilling до полного разрешения (интерактивно)
-
-К этому моменту воспроизведение (шаг 3) закрыто — проверено или осознанно пропущено. Иначе закрой его, не переходя к grilling. Вопросы и предложения о воспроизведении больше не поднимай.
-
-Прочитай методику `../../docs/grilling.md` и проведи по ней интервью по дереву решений над 9 полями задачи (правила полей — из `../../docs/ai-ready-task.md`).
-
-Специфика `create-task` в этом шаге:
-- Уже собранные факты (опрос + проверка) — **входы, не переспрашивай их**; фронт — только то, что ещё не разрешено.
-
-### 5. Финализация
-
-Обнови файл задачи `[<идентификатор>].md` — заполненность, структура и качество по `../../docs/ai-ready-task.md`. Перед завершением подтверди с пользователем, что общего понимания достигли.
-
-## Специфичные критерии качества
-
-Поверх общих критериев из `../../docs/ai-ready-task.md` для `create-task` дополнительно:
-
-- Идентификатор задачи — производное от смысла, согласован с пользователем, читаемый kebab-case; черновик сохранён в CWD до воспроизведения и grilling.
-- Воспроизведение и grilling — два раздельных последовательных шага: воспроизведение закрыто (проверено или явно пропущено с причиной) до начала grilling; их вопросы не смешивались.
-- Проверяемое обстоятельство (если было) проверено локально, находки отражены в Known facts / Hypotheses / Expected outcome.
-- Grilling завершён по правилам `../../docs/grilling.md` (фронт пуст); финал согласован с пользователем.
+- The task identifier is derived from the meaning, agreed with the user, and is readable kebab-case.
+- The draft was saved to `.agent-docs/work/<id>/task.md` before reproduction and grilling.

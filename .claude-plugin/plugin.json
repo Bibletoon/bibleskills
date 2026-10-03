@@ -1,0 +1,18 @@
+{
+  "name": "bibleskills",
+  "version": "0.1.0",
+  "description": "Personal engineering skills: one-question grilling, AI-Ready tasks from Jira or an interview, specs and tickets as local files, diff and branch review, bug diagnosis.",
+  "author": {
+    "name": "bibletoon"
+  },
+  "homepage": "https://github.com/bibletoon/bibleskills",
+  "repository": "https://github.com/bibletoon/bibleskills",
+  "keywords": [
+    "skills",
+    "grilling",
+    "jira",
+    "planning",
+    "code-review",
+    "gitlab"
+  ]
+}
