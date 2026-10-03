@@ -42,7 +42,7 @@ The shortest route, for work that fits one session.
 
 For an idea that still needs shaping, or a build that spans sessions.
 
-1. **`/grill-with-docs`** sharpens the idea by interview, recording settled terms and hard-to-reverse decisions in `.agent-docs/` (`GLOSSARY.md`, `adr/`) as it goes. Without a repo under you, use `/grill-me`: the same interview, nothing saved.
+1. **`/grill-with-docs`** sharpens the idea by interview, recording settled terms and hard-to-reverse decisions in `.agent-docs/` (`GLOSSARY.md`, `adr/`) as it goes. Without a repo under you, use `/grilling`: the same interview, nothing saved.
 2. **Branch: can every question be settled in conversation?** If one needs a runnable answer (a state model, business logic, a UI you have to see), detour through **`/prototype`**. A prototype usually lives in its own directory or branch, so bridge it with **`/handoff`** out and back.
 3. **Branch: is this a multi-session build?**
    - **No** → **`/to-spec`** turns the conversation into an AI-Ready spec, and **`/implement`** builds it right here.
@@ -74,7 +74,7 @@ For an idea that still needs shaping, or a build that spans sessions.
 
 Model-invoked references other skills pull in; reach for them directly when the **words**, not the process, are the problem.
 
-- **`/grilling`**: the interview primitive: one question at a time, ready answer options, facts are the agent's job and decisions are yours. `/grill-me`, `/grill-with-docs`, `/get-task`, `/create-task`, `/wayfinder` and `/improve-codebase-architecture` all run it.
+- **`/grilling`**: the interview primitive: one question at a time, ready answer options, facts are the agent's job and decisions are yours. Call it directly for an interview that saves nothing; `/grill-with-docs`, `/get-task`, `/create-task`, `/wayfinder` and `/improve-codebase-architecture` all run it.
 - **`/domain-modeling`**: sharpen the project's domain language (a fuzzy term, an overloaded word) and record hard-to-reverse decisions as ADRs, in `.agent-docs/`.
 - **`/codebase-design`**: the deep-module vocabulary (module, interface, depth, seam, adapter, leverage, locality) for shaping a module.
 - **`/writing-for-agents`**: how to write documents agents consume: skills, `CLAUDE.md`/`AGENTS.md`, pointed-at docs.
@@ -93,7 +93,6 @@ Read [PHASE-BOUNDARIES.md](PHASE-BOUNDARIES.md) for the ordered tree behind thes
 
 ## Standalone
 
-- **`/grill-me`**: the grilling interview with no repo and nothing saved: for a plan, a design, a piece of writing.
 - **`/research`**: a background agent investigates a question against primary sources and leaves a cited file in `.agent-docs/`, while you keep working. Feed the result into `/grill-with-docs`.
 - **`/to-questionnaire`**: when the answer is in **someone else's** head, it interviews you about the send (who it's for, what you need back) and writes them a questionnaire.
 - **`/wizard`**: an interactive bash script that walks a human through steps only they can take (dashboards, credentials, CI secrets, a one-off cutover), writing the values where they belong. The agent reaches for it itself when it hits such a wall.

@@ -65,7 +65,6 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 | Skill | Invoked by | What it does |
 |---|---|---|
 | `grilling` | Agent | The interview primitive: one question at a time, with ready answer options |
-| `grill-me` | You | A grilling session that saves nothing |
 | `grill-with-docs` | You | A grilling session that records glossary terms and ADRs as it goes |
 | `domain-modeling` | Agent | Sharpens domain language; maintains `GLOSSARY.md` and ADRs |
 | `codebase-design` | Agent | Deep-module vocabulary: module, interface, depth, seam, adapter |
