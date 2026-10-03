@@ -32,7 +32,8 @@ Everything the skills write about a project (tasks, specs, tickets, research, th
 ├── research/              research not tied to a work item
 └── work/<id>/             one folder per work item (Jira key or slug)
     ├── task.md  spec.md  jira.md  map.md  questionnaire.md  review.md
-    └── issues/NN-<slug>.md
+    ├── decisions/NN-<slug>.md   wayfinder decision tickets
+    └── issues/NN-<slug>.md      build tickets
 ```
 
 Commit it in projects where you want the docs versioned. Where you don't (e.g. a team repo with no shared AI conventions), ignore it locally; the rule applies to every worktree of the clone:
@@ -75,8 +76,9 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 
 | Skill | Invoked by | What it does |
 |---|---|---|
-| `implement` | You | Implements a task, spec or ticket within its constraints, then reviews and commits |
+| `implement` | You | Implements a task, spec or ticket within its constraints, cleans up, reviews and commits |
 | `implement-spec` | You | Implements a whole spec: parallel subagents over the ticket graph, one integration branch |
+| `ai-slop-cleaner` | Agent | Cleans AI-generated slop without changing behaviour: tests first, deletion first, one smell per pass |
 | `review-diff` | Agent | Reviews your own changes against the task/spec: Standards and Spec axes |
 | `review-branch` | You | Reviews a colleague's branch or GitLab MR: Logic, Standards and Task, with ready-to-post comments |
 | `diagnosing-bugs` | Agent | A disciplined loop for hard bugs: build a red-capable feedback loop before theorising |
@@ -101,6 +103,7 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 |---|---|---|
 | `task-builder` | `get-task` | Fetches the Jira ticket and repo context, builds the task's core, returns a compact summary |
 | `local-verifier` | `get-task`, `create-task` | Starts the project locally and reproduces the described behaviour |
+| `task-critic` | `get-task`, `create-task`, `to-spec` | Reads the finished task or spec cold, without the conversation, and reports what an executor would misread, miss or get stuck on |
 
 ## Requirements
 
@@ -114,7 +117,7 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 ```text
 .claude-plugin/   plugin.json, marketplace.json
 skills/<name>/    SKILL.md plus any reference files used by that skill only
-agents/           subagents (task-builder, local-verifier)
+agents/           subagents (task-builder, local-verifier, task-critic)
 docs/             reference shared by several skills (task format, task flow, workspace, code smells)
 .claude/CLAUDE.md conventions for editing this repo's skills
 ROADMAP.md        planned work
@@ -123,4 +126,5 @@ ROADMAP.md        planned work
 ## Credits
 
 - Most skills started from **[mattpocock/skills](https://github.com/mattpocock/skills)** by Matt Pocock (MIT; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)) and have since been adapted: local files instead of an issue tracker, one-question grilling, the AI-Ready task format, plugin packaging.
+- `ai-slop-cleaner` is adapted from **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** by Yeachan Heo (MIT; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)).
 - The `pr` skill's visuals come from [Dex Horthy](https://github.com/dexhorthy)'s `show-me` skill ([skills/pr/CREDITS.md](skills/pr/CREDITS.md)).

@@ -33,7 +33,7 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 
 6. If this changes the **frontier** of available tickets, kick off more **implementer subagents** to work on the new tickets. This allows for maximum concurrency.
 
-7. Once all tickets are complete, call the Skill tool with `bibleskills:review-diff` on the integration branch. Fix all issues raised by the code review in a single **implementer subagent**.
+7. Once all tickets are complete, run one cleanup pass: an **implementer subagent** calls the Skill tool with `bibleskills:ai-slop-cleaner`, scoped to the files changed on the integration branch. Then call the Skill tool with `bibleskills:review-diff` on the integration branch. Fix all issues raised by the code review in a single **implementer subagent**.
 
 8. Confirm every ticket is `done`. If a draft PR exists, mark it ready for review. Report the integration branch.
 

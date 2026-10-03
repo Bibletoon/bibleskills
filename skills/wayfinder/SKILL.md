@@ -18,13 +18,13 @@ Every map and ticket is a file with a title, so it has a **name**: that title. I
 
 ## The Map
 
-The map is a single file, `.agent-docs/work/<id>/map.md`, the canonical artifact. Its tickets are the files in `.agent-docs/work/<id>/issues/`. The shared conventions (statuses, blocking, frontier) are in `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`.
+The map is a single file, `.agent-docs/work/<id>/map.md`, the canonical artifact. Its tickets are the files in `.agent-docs/work/<id>/decisions/`, kept apart from `issues/`, which holds the build tickets `to-tickets` writes later. The shared conventions (statuses, blocking, frontier) are in `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`.
 
 The map is an **index**, not a store. It lists the decisions made and points at the tickets that hold their detail; a decision lives in exactly one place, its ticket, so the map never restates it, only gists it and links.
 
 ### The map body
 
-The whole map at low resolution, loaded once per session. Open tickets are **not** listed: they are the open files in `issues/`, found by scanning their **Status** lines.
+The whole map at low resolution, loaded once per session. Open tickets are **not** listed: they are the open files in `decisions/`, found by scanning their **Status** lines.
 
 <map-template>
 
@@ -40,7 +40,7 @@ The whole map at low resolution, loaded once per session. Open tickets are **not
 
 <!-- the index: one line per done ticket, enough to judge relevance, then zoom the link for the detail the ticket holds -->
 
-- [<done ticket title>](issues/NN-<slug>.md): <one-line gist of the answer>
+- [<done ticket title>](decisions/NN-<slug>.md): <one-line gist of the answer>
 
 ## Not yet specified
 
@@ -54,7 +54,7 @@ The whole map at low resolution, loaded once per session. Open tickets are **not
 
 ### Tickets
 
-Each ticket is a file `issues/<NN>-<slug>.md`, numbered from `01`; its number is its identity. Its body is the question, sized to one 100K token agent session:
+Each ticket is a file `decisions/<NN>-<slug>.md`, numbered from `01`; its number is its identity. Its body is the question, sized to one 100K token agent session:
 
 <ticket-template>
 
@@ -121,7 +121,7 @@ User invokes with a loose idea.
 1. **Name the destination.** Call the Skill tool twice, for "bibleskills:grilling" and "bibleskills:domain-modeling", to pin down what this map is finding its way to: the spec, decision, or change. The destination fixes the scope, so it's settled first.
 2. **Map the frontier.** Grill again, **breadth-first** this time: fan out across the whole space rather than deep on any one thread, surfacing the open decisions and the first steps takeable now. **If this surfaces no fog** (the way to the destination is already clear, the whole journey small enough for one session), you don't need a map. Stop and ask the user how they'd like to proceed.
 3. **Create the map** (`.agent-docs/work/<id>/map.md`, `<id>` a kebab-case slug of the destination): Destination and Notes filled in, Decisions-so-far empty, the fog sketched into **Not yet specified**.
-4. **Create the tickets you can specify now** as files in `issues/`, then wire blocking edges in a **second pass** (tickets need numbers before they can reference each other). Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog: the **Not yet specified** section.
+4. **Create the tickets you can specify now** as files in `decisions/`, then wire blocking edges in a **second pass** (tickets need numbers before they can reference each other). Wiring sorts them into the frontier and the blocked; everything you can't yet specify stays in the fog: the **Not yet specified** section.
 5. **Fire the research subagents.** For each `bibleskills:research` ticket you just created, spin up a subagent that calls the Skill tool with "bibleskills:research" to resolve it in parallel, capturing its findings in `.agent-docs/work/<id>/research/<slug>.md` with a context pointer from the ticket.
 6. Stop: charting is one session's work; it hand-resolves nothing.
 

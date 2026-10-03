@@ -27,3 +27,5 @@ The spec is saved as a local file per `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`.
    **Done when:** every field is filled or consciously left empty per the rules, and the spec meets the general quality criteria in `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`.
 
 4. Save it to `.agent-docs/work/<id>/spec.md`, where `<id>` is the work item's existing directory if the conversation started from one (e.g. a `task.md` or wayfinder `map.md`), otherwise a new kebab-case slug. Report the path. **Done when:** the file is saved and its path reported.
+
+5. Get a fresh-eyes check: call the agent `bibleskills:task-critic` with only paths (the spec, `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`, the repository root, the domain docs if they exist) and the user's language; never pass the conversation. Show the user its verdict and findings; apply the rewrites they accept and ask about findings that need a decision. Re-run only if the user asks. **Done when:** every finding is applied or dismissed by the user, and the saved spec reflects it.

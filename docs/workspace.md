@@ -24,13 +24,15 @@ Skills point here instead of restating it. When a skill names `GLOSSARY.md`, `GL
     ├── questionnaire.md           ← to-questionnaire
     ├── research/<slug>.md         ← research for this item (e.g. wayfinder research tickets)
     ├── notes/                     ← scratch notes shared by subagents (e.g. implement-spec exploration)
+    ├── decisions/
+    │   └── 01-<slug>.md           ← wayfinder decision tickets (questions to resolve)
     └── issues/
-        ├── 01-<slug>.md           ← to-tickets / wayfinder tickets
+        ├── 01-<slug>.md           ← to-tickets build tickets (work to implement)
         └── 02-<slug>.md
 ```
 
 - `<id>` is the Jira key when there is one (`MYCOMM-818`), otherwise a short kebab-case slug of the work's essence (`add-status-to-orders`). An item that grows (task → spec → tickets) keeps its directory.
-- Tickets are one file each, numbered from `01` in dependency order (blockers first), never a single combined file.
+- Tickets are one file each, numbered from `01` in dependency order (blockers first), never a single combined file. Decision tickets (`decisions/`) and build tickets (`issues/`) are numbered independently and never mixed: a work item can hold both when a wayfinder map turns into a spec and tickets.
 - Create files and directories lazily, when there is something to write.
 - Write artifact contents in the language the user writes in. Template headings, metadata keys (`Status`, `Blocked by`, `Type`) and status values stay in English, so skills can parse them.
 
@@ -63,7 +65,7 @@ Tickets carry metadata as bold lines directly under the title:
 - `**Blocked by:**` the ticket numbers that gate this one (`01, 03`), or `None`. A ticket is **unblocked** when every ticket it lists is `done` or `dropped`.
 - `**Type:**` wayfinder tickets only: `research` / `prototype` / `grilling` / `task`.
 
-The **frontier** is every ticket in `issues/` that is `ready` and unblocked; lowest number first.
+The **frontier** is every ticket in one folder (`issues/` for build tickets, `decisions/` for wayfinder) that is `ready` and unblocked; lowest number first. `Blocked by` numbers refer to tickets in the same folder.
 
 ## Referring to artifacts
 

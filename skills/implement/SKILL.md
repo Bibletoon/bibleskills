@@ -10,6 +10,6 @@ Specs and tickets are AI-Ready tasks (`${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.
 
 Run typechecking regularly, single test files regularly, and the full test suite once at the end.
 
-Once done, call the Skill tool with `bibleskills:review-diff` to review the work.
+Once done, call the Skill tool with `bibleskills:ai-slop-cleaner`, scoped to the files this work changed, then `bibleskills:review-diff` to review the work.
 
 Commit your work to the current branch.

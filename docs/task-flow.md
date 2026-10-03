@@ -45,7 +45,7 @@ Ask the user **exactly one separate question** about reproduction: the marker qu
 
 ### After verification
 
-Record the results (did it reproduce, the evidence, the likely cause) in the task file: refine **Known facts**, **Hypotheses**, **Expected outcome**. After that, don't raise reproduction again.
+Record the results (did it reproduce, the evidence, the likely cause) in the task file: refine **Known facts**, **Hypotheses**, **Expected outcome**. If reproduction was unstable or partial, or the cause stayed unclear, say so plainly and suggest `/bibleskills:diagnosing-bugs` rather than recording a guess as the cause; the user decides. After that, don't raise reproduction again.
 
 **Done when:** verification ran and its results are in the task file, or it was skipped with the reason told to the user, or the user declined.
 
@@ -59,9 +59,13 @@ Call the Skill tool with `bibleskills:grilling` (if the Skill tool is unavailabl
 
 ## Step C. Finalization
 
-Update the task file: fill, structure and quality per `ai-ready-task.md`. Before finishing, confirm with the user that you've reached a shared understanding.
+Update the task file: fill, structure and quality per `ai-ready-task.md`.
 
-**Done when:** the task file meets the general quality criteria in `ai-ready-task.md`, and the user has confirmed the shared understanding.
+Then get a **fresh-eyes check**: call the agent `bibleskills:task-critic` (fallback: a general-purpose subagent given `../agents/task-critic.md` (relative to this file) as its instructions, only if the named agent is unavailable). Pass it only paths, never the conversation: the absolute path to the task file, the absolute path to `ai-ready-task.md`, the repository root, the domain docs if they exist, and the user's language. Show the user its verdict and findings. The user decides what to change: apply rewrites they accept, and settle findings that need a decision with grilling questions (one at a time), not by guessing. Re-run the check only if the user asks.
+
+Before finishing, confirm with the user that you've reached a shared understanding.
+
+**Done when:** the task file meets the general quality criteria in `ai-ready-task.md`, every `task-critic` finding is either applied or dismissed by the user, and the user has confirmed the shared understanding.
 
 ## Flow quality criteria
 
@@ -70,3 +74,4 @@ On top of the general criteria in `ai-ready-task.md` and the entry point's own c
 - Reproduction and grilling are two separate, sequential steps: reproduction was closed (verified, or explicitly skipped with a reason) before grilling began; their questions were not mixed.
 - The verifiable circumstance (if any) was checked locally, and the findings are reflected in Known facts / Hypotheses / Expected outcome.
 - Grilling finished per the `grilling` skill's rules (the frontier is empty); the result was confirmed with the user.
+- `task-critic` read the final task without the conversation, and its findings were shown to the user.

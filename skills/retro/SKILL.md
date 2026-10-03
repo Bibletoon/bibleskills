@@ -22,7 +22,23 @@ The user has asked for a **retrospective**. You are suggesting improvements to t
 - **No-ops**: look for instructions in steering files that don't modify the agent's behavior. _Use when_ the steering files are large and unwieldy.
 - **Information access**: look for opportunities to increase the agent's access to information. Teeing dev server logs, readonly access to third-party services. _Use when_ a crucial piece of information was not available to the agent.
 
-4. Present these candidates to the user, in order of severity.
+4. **Filter the candidates.** Keep a candidate only if it passes all three:
+   - **Not googleable**: it isn't something the agent would find in five minutes of docs or search.
+   - **Specific**: it's about this codebase, this team's process or this user's setup, not general good practice.
+   - **Earned**: discovering it cost real effort in the session: a wrong turn, a long search, a mistake that got through.
+
+   Drop the rest silently: a short list the user acts on beats a long one they skim.
+
+5. **Pick a destination** for each surviving candidate, the cheapest one that makes it stick:
+   - a mechanical mistake → an automated check (linter rule, pre-commit hook, CI job);
+   - a judgement call for review → `CODING_STANDARDS.md`;
+   - where to find things → a navigation pointer in `CLAUDE.md`/`AGENTS.md`;
+   - knowledge about the project (a term, a decision, a gotcha) → `.agent-docs/` (`GLOSSARY.md`, `adr/`, per `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`);
+   - a repeatable multi-step procedure → a project skill in `.claude/skills/`.
+
+   Mark whether each destination is **team** (committed files others share: `CLAUDE.md`, standards, CI, `.claude/skills/`) or **personal**. If the repo keeps `.agent-docs/` out of git (`git check-ignore .agent-docs` succeeds), treat it as a team repo where AI conventions aren't agreed: offer team destinations as proposals to raise with the team, and prefer a personal destination (`.agent-docs/`, the user's own `~/.claude/CLAUDE.md`) when one works.
+
+6. Present the surviving candidates to the user, in order of severity, each with its destination and whether it's team or personal.
 
 ## Reference
 
