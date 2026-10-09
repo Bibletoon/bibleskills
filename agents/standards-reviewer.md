@@ -25,8 +25,8 @@ The caller gives you:
    - **Documented standard breached**: cite the file and the rule. These can be hard violations.
    - **Baseline smell**: name the smell and quote the hunk. These are always judgement calls, and a documented repository standard overrides them: where the repository endorses something the baseline would flag, suppress the smell.
    - Skip anything tooling already enforces (the formatter, the linter, the type checker).
-4. **Grade** each finding per the severity and confidence rules in `review-findings.md`. A baseline smell is rarely above `med`.
+4. **Check each candidate against "Before you write a finding" and "Not a finding"** in `review-findings.md` (a rule you cite must literally be in the standards file), then **grade** what survives per its severity and confidence rules. A baseline smell is rarely above `med`.
 
 ## What you MUST return
 
-Findings in the format from `review-findings.md`, each tagged `Standards`, highest severity first. No preamble, no restating what is fine.
+Findings in the format from `review-findings.md`, each tagged `Standards`, highest severity first, followed by its Open questions and Coverage sections. No preamble, no restating what is fine.

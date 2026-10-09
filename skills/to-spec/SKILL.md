@@ -19,7 +19,7 @@ The spec is saved as a local file per `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`.
 3. Write the spec in the AI-Ready task template. Map what the conversation settled onto its fields:
 
    - **Problem** / **Expected outcome**: what is being built and how to tell it's done, as concrete artifacts (endpoint + response, new module, changed behaviour).
-   - **Known facts**: the implementation decisions made: modules built or modified and their interfaces, architectural decisions, schema changes, API contracts, prototype verdicts. If a prototype produced a snippet that encodes a decision more precisely than prose (state machine, reducer, schema, type shape), inline its decision-rich part and note it came from a prototype.
+   - **Known facts**: the implementation decisions made: modules built or modified and their interfaces, architectural decisions, schema changes, API contracts, prototype verdicts. Each decision the conversation weighed carries the alternative it was chosen over and the reason, per the field rule in `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`. If a prototype produced a snippet that encodes a decision more precisely than prose (state machine, reducer, schema, type shape), inline its decision-rich part and note it came from a prototype.
    - **Required checks**: the agreed seams from step 2, what each test there verifies, and prior-art tests in the codebase to model them on.
    - **Non-goals**: what is out of scope.
    - The remaining fields per their rules in `${CLAUDE_PLUGIN_ROOT}/docs/ai-ready-task.md`: fill only what the conversation gave real substance to, leave the rest empty.

@@ -53,7 +53,7 @@ Which fields get filled is decided by the rules below and the key principle abov
 **May skip:** the result is trivial and obvious from Problem; the result is the act itself ("run the deploy"); it fully duplicates Stop conditions.
 
 ### Known facts
-**Contains:** decisions already made and data the agent must not reopen (architecture, what was tried and why it failed, agreements, business rules, terminology). **Guards against:** the agent redesigns what's already decided and spends iterations on a known answer.
+**Contains:** decisions already made and data the agent must not reopen (architecture, what was tried and why it failed, agreements, business rules, terminology). A decision taken in the interview is written **with the alternative it was chosen over and the reason**: "<decision>, chosen over <alternative> because <reason>". A bare decision invites the executor, or a reviewer, to reopen it with the very alternative that was already rejected. **Guards against:** the agent redesigns what's already decided and spends iterations on a known answer.
 **May skip:** the task is isolated, with no dependency on past decisions; Problem covers all the context; the agent is a "pure executor" with no choices to make.
 
 ### Hypotheses

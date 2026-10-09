@@ -61,7 +61,7 @@ Plus, per reviewer:
 
 ### 5. Write the report
 
-Assemble the report from the template below. Group findings by severity, not by axis; tag each with its axis. Check each severity against the scale in `${CLAUDE_PLUGIN_ROOT}/docs/review-findings.md` and correct it if a reviewer got it wrong; merge duplicates reported by two axes into one finding tagged with both. Number findings across the report (1, 2, 3…) so the summary table can refer to them. Leave out empty severity sections. The summary table lists every finding, high first.
+Assemble the report from the template below. Group findings by severity, not by axis; tag each with its axis. Check each severity against the scale in `${CLAUDE_PLUGIN_ROOT}/docs/review-findings.md` and correct it if a reviewer got it wrong; merge duplicates reported by two axes into one finding tagged with both. Number findings across the report (1, 2, 3…) so the summary table can refer to them. Leave out empty severity sections. The summary table lists every finding, high first. Collect the reviewers' Open questions into one section, tagged by axis, and their Coverage lines into one; neither counts as a finding.
 
 Print the report in your reply. Don't save it anywhere: the MR is the place for the findings, and the user decides which ones to post.
 
@@ -96,5 +96,13 @@ Print the report in your reply. Don't save it anywhere: the MR is the place for 
 | # | Severity | Description | Location |
 |---|---|---|---|
 | <#> | <high / med / low> | <one line> | `<path:line>` |
+
+## Open questions
+
+- <Logic / Standards / Spec> · <one line: the claim or the thing declined to judge, and why it is here>
+
+## Coverage
+
+<one line per axis: what was read in full, what was not>
 
 </review-template>

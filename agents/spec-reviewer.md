@@ -26,9 +26,9 @@ The caller gives you:
    - **Scope creep**: behaviour in the diff nobody asked for, or a change inside a Non-goal.
    - **Implemented but wrong**: a requirement that looks done but whose implementation does not match what the spec says.
    - **Constraint breached**: a boundary from Constraints crossed.
-   Quote the spec line for every finding.
-4. **Grade** each finding per the severity and confidence rules in `review-findings.md`.
+   Quote the spec line for every finding. Where the spec is silent, grade by what a reasonable user of the software would expect (the rule in `review-findings.md`); where you cannot tell what the spec intends, put it in Open questions rather than guessing either way.
+4. **Check each candidate against "Before you write a finding" and "Not a finding"** in `review-findings.md`, then **grade** what survives per its severity and confidence rules.
 
 ## What you MUST return
 
-Findings in the format from `review-findings.md`, each tagged `Spec`, highest severity first. No preamble, no restating what is fine.
+Findings in the format from `review-findings.md`, each tagged `Spec`, highest severity first, followed by its Open questions and Coverage sections. No preamble, no restating what is fine.

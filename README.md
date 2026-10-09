@@ -119,7 +119,7 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 .claude-plugin/   plugin.json, marketplace.json
 skills/<name>/    SKILL.md plus any reference files used by that skill only
 agents/           subagents (task-builder, local-verifier, task-critic, logic-/standards-/spec-reviewer)
-docs/             reference shared by several skills (task format, task flow, workspace, code smells, review findings)
+docs/             reference shared by several skills (task format, task flow, workspace, code smells, review findings, verification)
 .claude/CLAUDE.md conventions for editing this repo's skills
 ```
 

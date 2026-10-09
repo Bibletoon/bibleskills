@@ -23,7 +23,7 @@ Skills point here instead of restating it. When a skill names `GLOSSARY.md`, `GL
     ├── map.md                     ← wayfinder
     ├── questionnaire.md           ← to-questionnaire
     ├── research/<slug>.md         ← research for this item (e.g. wayfinder research tickets)
-    ├── notes/                     ← scratch notes shared by subagents (e.g. implement-spec exploration)
+    ├── notes/                     ← scratch notes shared by subagents (implement-spec exploration, implementer reports)
     ├── decisions/
     │   └── 01-<slug>.md           ← wayfinder decision tickets (questions to resolve)
     └── issues/

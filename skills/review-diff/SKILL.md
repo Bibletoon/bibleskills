@@ -3,7 +3,7 @@ name: review-diff
 description: "Review your own (or your agent's) changes since a fixed point on three axes, Logic, Standards and Spec, in parallel reviewer agents. Use when checking work-in-progress against its .agent-docs task/spec, or asked to \"review since X\". Someone else's branch: review-branch."
 ---
 
-Three-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Three-axis review of everything the branch changed since a fixed point the user supplies: committed, staged and unsaved-to-git alike, so the review happens **before** the commit, not after it.
 
 - **Logic**: does the code do the right thing? Bugs, edge cases, failure paths, concurrency, security, compatibility.
 - **Standards**: does the code conform to this repo's documented coding standards and the smell baseline?
@@ -19,11 +19,17 @@ Talk to the user in the language they write in.
 
 Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main`, `HEAD~5`, etc.). If they didn't specify one, ask for it.
 
-Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
+The diff covers the **whole branch as it is now**, uncommitted work included. Capture the diff command once:
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here, not inside three parallel reviewers.
+```bash
+git diff $(git merge-base <fixed-point> HEAD)
+```
 
-**Done when:** the fixed point resolves and the diff is non-empty.
+Two-dot against the merge-base, with no `HEAD` on the right, compares the base with the working tree: commits, staged and unstaged changes all land in one diff. It still misses **untracked files**, so list them too (`git ls-files --others --exclude-standard`) and hand the list to the reviewers as new files to read in full. Also note the commits via `git log <fixed-point>..HEAD --oneline`; "none yet" is a valid answer.
+
+Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and that the diff or the untracked list is non-empty. A bad ref or nothing to review should fail here, not inside three parallel reviewers.
+
+**Done when:** the fixed point resolves and there is something to review.
 
 ### 2. Identify the spec source
 
@@ -51,7 +57,7 @@ Call the agents `bibleskills:logic-reviewer`, `bibleskills:standards-reviewer` a
 Every prompt includes:
 
 - the absolute path to `${CLAUDE_PLUGIN_ROOT}/docs/review-findings.md`;
-- the diff command and the commit list;
+- the diff command, the untracked-file list and the commit list;
 - where the code lives: the **working tree**;
 - the path to the domain docs if they exist (`.agent-docs/GLOSSARY.md`, `.agent-docs/adr/`, per `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`);
 - the user's language.
@@ -65,9 +71,9 @@ Plus, per reviewer:
 
 ### 5. Aggregate
 
-Present the reports under `## Logic`, `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_). Where two axes report the same place, keep both: the agreement is itself a signal.
+Present the reports under `## Logic`, `## Standards` and `## Spec` headings, verbatim or lightly cleaned, each with its own Open questions and Coverage. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_). Where two axes report the same place, keep both: the agreement is itself a signal.
 
-End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
+End with a one-line summary: total findings per axis, the worst issue _within each axis_ (if any), and how many open questions wait for the user. Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
 **Done when:** every axis that ran is presented, and the summary line is given.
 

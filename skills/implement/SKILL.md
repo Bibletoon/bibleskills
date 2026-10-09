@@ -12,4 +12,6 @@ Run typechecking regularly, single test files regularly, and the full test suite
 
 Once done, call the Skill tool with `bibleskills:ai-slop-cleaner`, scoped to the files this work changed, then `bibleskills:review-diff` to review the work and fix what it finds.
 
-**Done when:** the task's completion criteria hold, if it has any (its **Expected outcome**, **Required checks** and **Stop conditions**, each verified with fresh output, not from memory), and the full test suite passes. Report the evidence for both; if either does not hold, say so and keep working or stop with the reason.
+Before claiming the work is done, pass the gate in `${CLAUDE_PLUGIN_ROOT}/docs/verification.md`: for the task's completion criteria, if it has any (its **Expected outcome**, **Required checks** and **Stop conditions**), and for the full test suite. Each claim needs a command run after the last edit and its output read; a subagent's report, an earlier run or "should pass" is not evidence.
+
+**Done when:** every criterion of the task holds and the full test suite passes, both shown in the verification report from `${CLAUDE_PLUGIN_ROOT}/docs/verification.md` at the end of your reply. If either does not hold, say so in that report and keep working, or stop with the reason.
