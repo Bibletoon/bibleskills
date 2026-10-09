@@ -23,7 +23,6 @@ Every skill is typed with the plugin prefix: `/grill-with-docs` below means `/bi
 | A colleague's branch or MR to review | `/review-branch` |
 | A question someone else must answer | `/to-questionnaire` |
 | Reading legwork (docs, APIs, specs) | `/research` |
-| A step only a human can do (dashboards, secrets, cutover) | `/wizard` |
 | A design question code would settle faster than talk | `/prototype` |
 | A reply that didn't land | `/wait-what` |
 | A session ending, work to carry elsewhere | `/handoff` (see Phase boundaries first) |
@@ -95,6 +94,5 @@ Read [PHASE-BOUNDARIES.md](PHASE-BOUNDARIES.md) for the ordered tree behind thes
 
 - **`/research`**: a background agent investigates a question against primary sources and leaves a cited file in `.agent-docs/`, while you keep working. Feed the result into `/grill-with-docs`.
 - **`/to-questionnaire`**: when the answer is in **someone else's** head, it interviews you about the send (who it's for, what you need back) and writes them a questionnaire.
-- **`/wizard`**: an interactive bash script that walks a human through steps only they can take (dashboards, credentials, CI secrets, a one-off cutover), writing the values where they belong. The agent reaches for it itself when it hits such a wall.
 - **`/wait-what`**: mid-conversation, re-pitch the last message in plain language with the missing context and the glossary's terms.
 - **`/teach`**: learn a topic over several sessions; it uses the current directory as its workspace, so run it in a folder of its own.

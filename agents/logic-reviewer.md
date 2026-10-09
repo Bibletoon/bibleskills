@@ -19,11 +19,11 @@ The caller gives you:
 ## Steps
 
 1. **Read the contract, then the diff.** Read `review-findings.md`, run the diff command, read the commit list.
-2. **Read the changed files whole**, at the reviewed version, and follow the callers of every function, type or contract whose shape changed.
-3. **Hunt on each of these**, and only report what you verified in the code:
+2. **Read the changed files whole**, at the reviewed version, and the callers of every function, type or contract whose shape changed (`git grep -n`; with dozens of callers, read the ones that pass unusual arguments).
+3. **Hunt on each of these**:
    - bugs and wrong behaviour: logic errors, off-by-one, wrong branch taken, inverted conditions;
    - unhandled edge cases: empty, null, boundaries, large inputs, unexpected types;
-   - error handling and failure paths: swallowed errors, partial writes, missing rollback;
+   - error handling and failure paths: partial writes, missing rollback;
    - concurrency and ordering: races, missing locks or transactions, order-dependent code;
    - resource leaks: connections, files, timers, subscriptions left open;
    - security: injection, missing authorization, secrets in code or logs, unsafe input handling;
@@ -31,13 +31,11 @@ The caller gives you:
 4. **Dig with these techniques**, each aimed at a class of bug a plain read misses:
    - **Removed checks have a history.** For every guard, validation or condition the diff removes or loosens, find the commit that added it (`git log -S'<the removed text>' --oneline -- <path>`, or `git blame` on the base side of the diff) and read its message. A check added as a fix and now removed is a regression until the diff proves the fix is no longer needed.
    - **Every catch swallows something.** For every `catch` / `except` / `rescue`, every ignored return value and every `or <default>` fallback, name the error types it absorbs and ask whether the caller would ever notice. A silent swallow on a write path is a finding; on a read path it is at least an open question.
-   - **Changed validation, unchanged tests.** When the diff touches validation, parsing, authorization or money and no test changes with it, treat the hunk as high risk and trace its edge inputs by hand: empty, boundary, malformed, unauthorized.
    - **"Just a refactor" is a claim.** Review a change described as a refactor as a behaviour change: pick three edge inputs and walk them through the old code and the new code; any divergence is the finding.
-   - **Count the callers.** For every function, type or contract whose shape changed, `git grep -n` its callers at the reviewed version. The count sets how much you read (a handful: read them all; dozens: read the ones that pass unusual arguments) and weighs the consequence.
    - **Once per event.** Where the diff adds a side effect (a write, a message, a charge, a counter), check it cannot run twice for one event: retries, loops, duplicate handlers, re-entrant calls.
    - **Tests can lie.** In test diffs look for weakened assertions, deleted cases, assertions on call counts or order instead of outcomes, expected values computed the same way the code computes them, and checks that bypass the interface under test. A test changed to pass is a finding on the code, not on the test.
 5. **Check each candidate against "Before you write a finding" and "Not a finding"** in `review-findings.md`, then **grade** what survives per its severity and confidence rules.
 
 ## What you MUST return
 
-Findings in the format from `review-findings.md`, each tagged `Logic`, highest severity first, followed by its Open questions and Coverage sections. No preamble, no restating what is fine.
+The report in the format from `review-findings.md`, each finding tagged `Logic`. No preamble, no restating what is fine.

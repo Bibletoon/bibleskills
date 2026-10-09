@@ -91,7 +91,6 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 | `handoff` | You | Compacts the conversation into a handoff document for another session |
 | `retro` | You | A retrospective that suggests changes to the agent's environment |
 | `wait-what` | You | Re-pitches the last message that didn't land |
-| `wizard` | Agent | Generates an interactive bash script for steps only a human can do |
 | `writing-for-agents` | Agent | How to write skills, `CLAUDE.md`/`AGENTS.md` and other docs agents read |
 | `teach` | You | Teaches a topic over several sessions in a dedicated folder |
 
@@ -111,7 +110,7 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 - **Git.** Everything assumes a git checkout.
 - **Jira MCP server `jit`** for `get-task` and `review-branch` (fetching tickets).
 - **GitLab MCP server** (optional) for `review-branch` to find the MR and its target branch; without it the base branch is inferred from the git history.
-- **Bash** for `wizard` and the `diagnosing-bugs` HITL loop; on Windows, Git Bash.
+- **Bash** for the `diagnosing-bugs` HITL loop; on Windows, Git Bash.
 
 ## Repository layout
 

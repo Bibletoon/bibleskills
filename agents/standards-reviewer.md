@@ -23,10 +23,9 @@ The caller gives you:
 2. **Read the diff and the changed files whole**, at the reviewed version.
 3. **Match the diff against the standards**, hunk by hunk:
    - **Documented standard breached**: cite the file and the rule. These can be hard violations.
-   - **Baseline smell**: name the smell and quote the hunk. These are always judgement calls, and a documented repository standard overrides them: where the repository endorses something the baseline would flag, suppress the smell.
-   - Skip anything tooling already enforces (the formatter, the linter, the type checker).
-4. **Check each candidate against "Before you write a finding" and "Not a finding"** in `review-findings.md` (a rule you cite must literally be in the standards file), then **grade** what survives per its severity and confidence rules. A baseline smell is rarely above `med`.
+   - **Baseline smell**: name the smell and quote the hunk, under the two rules at the top of `code-smells.md`.
+4. **Check each candidate against "Before you write a finding" and "Not a finding"** in `review-findings.md`, then **grade** what survives per its severity and confidence rules. A baseline smell is rarely above `med`.
 
 ## What you MUST return
 
-Findings in the format from `review-findings.md`, each tagged `Standards`, highest severity first, followed by its Open questions and Coverage sections. No preamble, no restating what is fine.
+The report in the format from `review-findings.md`, each finding tagged `Standards`. No preamble, no restating what is fine.

@@ -28,7 +28,7 @@ Leave these out of the findings, whatever the severity would have been:
 
 - code the diff did not touch (pre-existing problems; mention one at most in Open questions if it is severe and the change made it reachable);
 - anything the formatter, linter or type checker will catch;
-- a behaviour change the spec or the commit messages say is intended;
+- a behaviour change the spec says is intended (the commit messages are the author's claim, not the spec: they never excuse a finding);
 - "consider adding …" with no failure the addition prevents;
 - a rule you attribute to a standards file that does not literally contain it;
 - a suppressed warning (`lint-ignore`, `noqa`, `@ts-ignore`) with a reason given next to it;
