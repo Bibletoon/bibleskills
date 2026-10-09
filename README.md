@@ -79,7 +79,7 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 | `implement-spec` | You | Implements a whole spec: parallel subagents over the ticket graph, one integration branch |
 | `ai-slop-cleaner` | Agent | Cleans AI-generated slop without changing behaviour: tests first, deletion first, one smell per pass |
 | `review-diff` | Agent | Reviews your own changes against the task/spec: Standards and Spec axes |
-| `review-branch` | You | Reviews a colleague's branch or GitLab MR: Logic, Standards and Task, with ready-to-post comments |
+| `review-branch` | You | Reviews a colleague's branch or GitLab MR: Logic, Standards and Task, findings ranked high/med/low with a summary table |
 | `diagnosing-bugs` | Agent | A disciplined loop for hard bugs: build a red-capable feedback loop before theorising |
 | `pr` | Agent | Shapes an MR/PR body: a minimal visual, before/after evidence, merge danger |
 | `improve-codebase-architecture` | You | Surveys the codebase for deepening opportunities as an HTML report |

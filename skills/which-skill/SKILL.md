@@ -64,7 +64,7 @@ For an idea that still needs shaping, or a build that spans sessions.
 
 - **`/ai-slop-cleaner`**: before review, strip what agents tend to leave behind (dead code, duplicates, pass-through wrappers, weak tests) without changing behaviour; `--review` only reports. Lighter than it, Claude Code's built-in `/simplify` does a quick quality pass over a diff.
 - **`/review-diff`**: your own (or your agent's) changes since a fixed point, against the task or spec in `.agent-docs/`, on two axes: Standards and Spec.
-- **`/review-branch`**: a colleague's branch or GitLab MR. It finds the MR and the base itself, pulls the Jira task from the branch name, reads the branch straight from git, and reviews Logic, Standards and Task with severities and comments ready to post. Tests are CI's job, not its.
+- **`/review-branch`**: a colleague's branch or GitLab MR. It finds the MR and the base itself, pulls the Jira task from the branch name, reads the branch straight from git, and reviews Logic, Standards and Task with findings ranked high/med/low and a summary table. Tests are CI's job, not its.
 
 ## Codebase health
 
