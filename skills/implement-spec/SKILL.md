@@ -27,9 +27,11 @@ Communication to and from subagents should be sparse. Communicate primarily thro
 4. Use **implementer subagents** to implement each ticket, each in its own worktree on its own branch. Each implementer subagent:
    - confirms its worktree is based on the integration branch before starting, and resets onto it if not;
    - treats the ticket as an AI-Ready task: stays within its Constraints and Non-goals, runs every Required check, stops at its Stop conditions;
-   - merges the integration branch tip into its own branch before reporting done
+   - touches only what its ticket owns: a problem found outside the ticket (a bug in neighbouring code, a smell, a missing test) is **reported, not fixed**: in its report back to you, or as a note in `.agent-docs/work/<id>/notes/` (never in the ticket files, which you own), so you decide whether it becomes a new ticket; no cleanup or review passes of its own, those run once on the integration branch in step 7;
+   - merges the integration branch tip into its own branch before reporting done;
+   - is done only when the ticket's criteria hold (Expected outcome, Required checks, Stop conditions), each verified with fresh output, and the tests of the area it touched pass; the full suite belongs to the integration branch.
 
-5. Once an **implementer subagent** completes, merge its work to the integration branch with a **merger subagent**.
+5. Once an **implementer subagent** completes, merge its work to the integration branch with a **merger subagent**. The merger runs the full test suite on the integration branch after the merge and reports the result: the branch stays green merge to merge. A red suite after a clean merge means two tickets conflict in behaviour; stop dispatching, fix it on the integration branch (a single implementer subagent, scoped to the failure), and only then continue.
 
 6. If this changes the **frontier** of available tickets, kick off more **implementer subagents** to work on the new tickets. This allows for maximum concurrency.
 
