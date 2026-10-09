@@ -1,6 +1,6 @@
 # Code smell baseline
 
-The standards baseline every code review carries, whatever the repo documents. Skills that review code (`review-diff`, `review-branch`) pass this file's absolute path to their standards sub-agent instead of restating it.
+The standards baseline every code review carries, whatever the repo documents. Skills that review code (`review-diff`, `review-branch`) pass this file's absolute path to the `standards-reviewer` agent instead of restating it.
 
 On top of whatever the repo documents, a standards review always carries this **smell baseline**: a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
 

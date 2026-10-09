@@ -1,14 +1,17 @@
 ---
 name: review-diff
-description: "Review your own (or your agent's) changes since a fixed point on two axes, Standards and Spec, in parallel sub-agents. Use when checking work-in-progress against its .agent-docs task/spec, or asked to \"review since X\". Someone else's branch: review-branch."
+description: "Review your own (or your agent's) changes since a fixed point on three axes, Logic, Standards and Spec, in parallel reviewer agents. Use when checking work-in-progress against its .agent-docs task/spec, or asked to \"review since X\". Someone else's branch: review-branch."
 ---
 
-Two-axis review of the diff between `HEAD` and a fixed point the user supplies:
+Three-axis review of the diff between `HEAD` and a fixed point the user supplies:
 
-- **Standards**: does the code conform to this repo's documented coding standards?
+- **Logic**: does the code do the right thing? Bugs, edge cases, failure paths, concurrency, security, compatibility.
+- **Standards**: does the code conform to this repo's documented coding standards and the smell baseline?
 - **Spec**: does the code faithfully implement the originating task / spec?
 
-Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
+Each axis runs as its own **reviewer agent**, in parallel, so they don't pollute each other's context; this skill then aggregates their findings. The contract they share (how to read the code, the severity scale, the finding format) is `${CLAUDE_PLUGIN_ROOT}/docs/review-findings.md`.
+
+Talk to the user in the language they write in.
 
 ## Process
 
@@ -18,7 +21,9 @@ Whatever the user said is the fixed point (a commit SHA, branch name, tag, `main
 
 Capture the diff command once: `git diff <fixed-point>...HEAD` (three-dot, so the comparison is against the merge-base). Also note the list of commits via `git log <fixed-point>..HEAD --oneline`.
 
-Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here, not inside two parallel sub-agents.
+Before going further, confirm the fixed point resolves (`git rev-parse <fixed-point>`) and the diff is non-empty. A bad ref or empty diff should fail here, not inside three parallel reviewers.
+
+**Done when:** the fixed point resolves and the diff is non-empty.
 
 ### 2. Identify the spec source
 
@@ -27,41 +32,51 @@ Look for the originating spec, in this order:
 1. A path the user passed as an argument.
 2. A work item referenced in the commit messages or branch name (a Jira key like `MYCOMM-818`, an `.agent-docs/work/<id>` slug): its `task.md`, `spec.md`, or the ticket under `issues/` the commits implement (layout in `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`).
 3. A spec file under `.agent-docs/work/`, `docs/`, or `specs/` matching the branch name or feature.
-4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
+4. If nothing is found, ask the user where the spec is. If they say there isn't one, the Spec axis is skipped and the final report says "no spec available".
+
+**Done when:** you hold a spec path, or the Spec axis is explicitly skipped.
 
 ### 3. Identify the standards sources
 
-Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.
+Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`, plus linter and formatter configs.
 
 On top of whatever the repo documents, the Standards axis always carries the **smell baseline** in `${CLAUDE_PLUGIN_ROOT}/docs/code-smells.md`: a fixed set of Fowler code smells that applies even when a repo documents nothing, always as judgement calls, and always overridden by a documented repo standard.
 
-### 4. Spawn both sub-agents in parallel
+**Done when:** the list of standards sources is known (possibly empty: the baseline still applies).
 
-**Standards sub-agent prompt** should include:
+### 4. Run the three reviewers in parallel
 
-- The full diff command and commit list.
-- The list of standards-source files you found in step 3, **plus the absolute path to the smell baseline** (`${CLAUDE_PLUGIN_ROOT}/docs/code-smells.md`), to read in full.
-- The brief: "Report, per file/hunk where relevant, (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls: documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+Call the agents `bibleskills:logic-reviewer`, `bibleskills:standards-reviewer` and `bibleskills:spec-reviewer` in parallel (fallback: a general-purpose subagent given `${CLAUDE_PLUGIN_ROOT}/agents/<name>.md` as its instructions, only if the named agent is unavailable). Pass only paths and facts, never the conversation.
 
-**Spec sub-agent prompt** should include:
+Every prompt includes:
 
-- The diff command and commit list.
-- The path or fetched contents of the spec.
-- The brief: "Report: (a) requirements the spec asked for that are missing or partial; (b) behaviour in the diff that wasn't asked for (scope creep); (c) requirements that look implemented but where the implementation looks wrong. Quote the spec line for each finding. Under 400 words."
+- the absolute path to `${CLAUDE_PLUGIN_ROOT}/docs/review-findings.md`;
+- the diff command and the commit list;
+- where the code lives: the **working tree**;
+- the path to the domain docs if they exist (`.agent-docs/GLOSSARY.md`, `.agent-docs/adr/`, per `${CLAUDE_PLUGIN_ROOT}/docs/workspace.md`);
+- the user's language.
 
-If the spec is missing, skip the Spec sub-agent and note this in the final report.
+Plus, per reviewer:
+
+- **standards-reviewer**: the standards sources from step 3 and the absolute path to `${CLAUDE_PLUGIN_ROOT}/docs/code-smells.md`.
+- **spec-reviewer**: the spec path from step 2. Skip this reviewer if there is no spec.
+
+**Done when:** every reviewer that runs has reported.
 
 ### 5. Aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings, because the two axes are deliberately separate (see _Why two axes_).
+Present the reports under `## Logic`, `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_). Where two axes report the same place, keep both: the agreement is itself a signal.
 
 End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 
-## Why two axes
+**Done when:** every axis that ran is presented, and the summary line is given.
 
-A change can pass one axis and fail the other:
+## Why separate axes
 
-- Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
-- Code that does exactly what the spec asked but breaks the project's conventions → **Spec pass, Standards fail.**
+A change can pass two axes and fail the third:
 
-Reporting them separately stops one axis from masking the other.
+- Code that follows every standard and matches the spec, but miscounts at a boundary → **Logic fail.**
+- Code that follows every standard but implements the wrong thing → **Spec fail.**
+- Code that does exactly what the spec asked but breaks the project's conventions → **Standards fail.**
+
+Reporting them separately stops one axis from masking another.

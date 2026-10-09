@@ -36,7 +36,7 @@ Every skill is typed with the plugin prefix: `/grill-with-docs` below means `/bi
 The shortest route, for work that fits one session.
 
 1. **`/get-task <KEY>`** builds an AI-Ready task (`.agent-docs/work/<KEY>/task.md`) from the Jira ticket; **`/create-task`** builds one by interviewing you when there's no ticket. Both offer to reproduce the described behaviour locally first, grill the task one question at a time until every field is settled, then have a subagent read it cold, without the conversation, to catch what an executor would misread.
-2. **`/implement`** does the work against the task: stays inside its Constraints and Non-goals, runs its Required checks, stops at its Stop conditions, then runs `/review-diff` and commits.
+2. **`/implement`** does the work against the task: stays inside its Constraints and Non-goals, runs its Required checks, stops at its Stop conditions, then runs `/review-diff`, and is done only when the task's criteria hold and the full test suite passes.
 
 ## The main flow: idea → ship
 
@@ -49,7 +49,7 @@ For an idea that still needs shaping, or a build that spans sessions.
    - **Yes** → **`/to-spec`**, then **`/to-tickets`** splits it into tracer-bullet tickets (`.agent-docs/work/<id>/issues/`), each declaring what blocks it. Then either:
      - **`/implement`** one ticket at a time, `/clear`ing between them: each ticket is self-contained, so the last one's context is disposable;
      - **`/implement-spec`** for the whole spec in one run: implementer subagents work the ready frontier in parallel and land everything on one integration branch.
-4. **Clean, review and ship.** `/implement` and `/implement-spec` close with **`/ai-slop-cleaner`** over the changed files (behaviour locked by tests, deletion first) and then **`/review-diff`** (Standards + Spec).
+4. **Clean, review and ship.** `/implement` and `/implement-spec` close with **`/ai-slop-cleaner`** over the changed files (behaviour locked by tests, deletion first) and then **`/review-diff`** (Logic + Standards + Spec).
 5. **`/retro`** closes the loop, especially after a build that went sideways: it suggests changes to the agent's **environment** (navigation pointers, automated checks, the standards `/review-diff` enforces, steering files), not to the code.
 
 **Context hygiene.** Keep steps 1–3 in one unbroken context window, so grilling, spec and tickets build on the same thinking; each `/implement` then starts fresh from its ticket. If the session nears the [smart zone](https://www.aihero.dev/ai-coding-dictionary/smart-zone) limit (~150k tokens) before `/to-tickets`, `/compact` at the nearest phase boundary rather than pushing on degraded. Run `/retro` in the session it looks back on, before clearing.
@@ -63,8 +63,8 @@ For an idea that still needs shaping, or a build that spans sessions.
 ## Review
 
 - **`/ai-slop-cleaner`**: before review, strip what agents tend to leave behind (dead code, duplicates, pass-through wrappers, weak tests) without changing behaviour; `--review` only reports. Lighter than it, Claude Code's built-in `/simplify` does a quick quality pass over a diff.
-- **`/review-diff`**: your own (or your agent's) changes since a fixed point, against the task or spec in `.agent-docs/`, on two axes: Standards and Spec.
-- **`/review-branch`**: a colleague's branch or GitLab MR. It finds the MR and the base itself, pulls the Jira task from the branch name, reads the branch straight from git, and reviews Logic, Standards and Task with findings ranked high/med/low and a summary table. Tests are CI's job, not its.
+- **`/review-diff`**: your own (or your agent's) changes since a fixed point, against the task or spec in `.agent-docs/`, on three axes: Logic, Standards and Spec, each its own reviewer agent, reported separately.
+- **`/review-branch`**: a colleague's branch or GitLab MR. It finds the MR and the base itself, pulls the Jira task from the branch name, reads the branch straight from git, and runs the same three reviewer agents, with findings ranked high/med/low and a summary table printed in the reply. Tests are CI's job, not its.
 
 ## Codebase health
 

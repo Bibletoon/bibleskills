@@ -31,7 +31,7 @@ Everything the skills write about a project (tasks, specs, tickets, research, th
 ├── adr/                   architecture decision records
 ├── research/              research not tied to a work item
 └── work/<id>/             one folder per work item (Jira key or slug)
-    ├── task.md  spec.md  jira.md  map.md  questionnaire.md  review.md
+    ├── task.md  spec.md  jira.md  map.md  questionnaire.md
     ├── decisions/NN-<slug>.md   wayfinder decision tickets
     └── issues/NN-<slug>.md      build tickets
 ```
@@ -75,11 +75,11 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 
 | Skill | Invoked by | What it does |
 |---|---|---|
-| `implement` | You | Implements a task, spec or ticket within its constraints, cleans up, reviews and commits |
+| `implement` | You | Implements a task, spec or ticket within its constraints, cleans up, reviews, and finishes only when the task's criteria hold and the full test suite passes |
 | `implement-spec` | You | Implements a whole spec: parallel subagents over the ticket graph, one integration branch |
 | `ai-slop-cleaner` | Agent | Cleans AI-generated slop without changing behaviour: tests first, deletion first, one smell per pass |
-| `review-diff` | Agent | Reviews your own changes against the task/spec: Standards and Spec axes |
-| `review-branch` | You | Reviews a colleague's branch or GitLab MR: Logic, Standards and Task, findings ranked high/med/low with a summary table |
+| `review-diff` | Agent | Reviews your own changes against the task/spec: Logic, Standards and Spec axes, each a reviewer agent |
+| `review-branch` | You | Reviews a colleague's branch or GitLab MR: Logic, Standards and Spec, findings ranked high/med/low with a summary table, printed in the reply |
 | `diagnosing-bugs` | Agent | A disciplined loop for hard bugs: build a red-capable feedback loop before theorising |
 | `improve-codebase-architecture` | You | Surveys the codebase for deepening opportunities as an HTML report |
 
@@ -102,6 +102,9 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 | `task-builder` | `get-task` | Fetches the Jira ticket and repo context, builds the task's core, returns a compact summary |
 | `local-verifier` | `get-task`, `create-task` | Starts the project locally and reproduces the described behaviour |
 | `task-critic` | `get-task`, `create-task`, `to-spec` | Reads the finished task or spec cold, without the conversation, and reports what an executor would misread, miss or get stuck on |
+| `logic-reviewer` | `review-diff`, `review-branch` | The Logic axis: bugs, edge cases, failure paths, concurrency, security, compatibility of changed contracts |
+| `standards-reviewer` | `review-diff`, `review-branch` | The Standards axis: the repo's documented standards plus the smell baseline in `docs/code-smells.md` |
+| `spec-reviewer` | `review-diff`, `review-branch` | The Spec axis: requirements missing or partial, scope creep, implemented-but-wrong, against the task, spec or Jira brief |
 
 ## Requirements
 
@@ -115,8 +118,8 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 ```text
 .claude-plugin/   plugin.json, marketplace.json
 skills/<name>/    SKILL.md plus any reference files used by that skill only
-agents/           subagents (task-builder, local-verifier, task-critic)
-docs/             reference shared by several skills (task format, task flow, workspace, code smells)
+agents/           subagents (task-builder, local-verifier, task-critic, logic-/standards-/spec-reviewer)
+docs/             reference shared by several skills (task format, task flow, workspace, code smells, review findings)
 .claude/CLAUDE.md conventions for editing this repo's skills
 ```
 
