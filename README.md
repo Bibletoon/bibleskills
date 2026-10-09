@@ -81,7 +81,6 @@ Full layout and conventions: [docs/workspace.md](docs/workspace.md).
 | `review-diff` | Agent | Reviews your own changes against the task/spec: Standards and Spec axes |
 | `review-branch` | You | Reviews a colleague's branch or GitLab MR: Logic, Standards and Task, findings ranked high/med/low with a summary table |
 | `diagnosing-bugs` | Agent | A disciplined loop for hard bugs: build a red-capable feedback loop before theorising |
-| `pr` | Agent | Shapes an MR/PR body: a minimal visual, before/after evidence, merge danger |
 | `improve-codebase-architecture` | You | Surveys the codebase for deepening opportunities as an HTML report |
 
 ### Session and environment
@@ -119,11 +118,9 @@ skills/<name>/    SKILL.md plus any reference files used by that skill only
 agents/           subagents (task-builder, local-verifier, task-critic)
 docs/             reference shared by several skills (task format, task flow, workspace, code smells)
 .claude/CLAUDE.md conventions for editing this repo's skills
-ROADMAP.md        planned work
 ```
 
 ## Credits
 
 - Most skills started from **[mattpocock/skills](https://github.com/mattpocock/skills)** by Matt Pocock (MIT; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)) and have since been adapted: local files instead of an issue tracker, one-question grilling, the AI-Ready task format, plugin packaging.
 - `ai-slop-cleaner` is adapted from **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** by Yeachan Heo (MIT; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)).
-- The `pr` skill's visuals come from [Dex Horthy](https://github.com/dexhorthy)'s `show-me` skill ([skills/pr/CREDITS.md](skills/pr/CREDITS.md)).

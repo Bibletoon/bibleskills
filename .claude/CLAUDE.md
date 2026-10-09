@@ -1,6 +1,6 @@
 # bibleskills
 
-A Claude Code plugin: skills in `skills/`, subagents in `agents/`, shared reference in `docs/`. `ROADMAP.md` tracks planned work. Run `claude plugin validate . --strict` after changes.
+A Claude Code plugin: skills in `skills/`, subagents in `agents/`, shared reference in `docs/`. Run `claude plugin validate . --strict` after changes.
 
 Many skills come from [mattpocock/skills](https://github.com/mattpocock/skills). In those, apply the mechanical conventions below (headings, template wrappers, links, file names) but keep the prose and section order, so upstream changes stay mergeable. Skills authored here follow every convention.
 
