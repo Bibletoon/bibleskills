@@ -19,7 +19,7 @@ Skills point here instead of restating it. When a skill names `GLOSSARY.md`, `GL
 └── work/<id>/                     ← one directory per work item
     ├── task.md                    ← get-task / create-task
     ├── spec.md                    ← to-spec
-    ├── jira.md                    ← to-jira
+    ├── jira.md                    ← to-jira (one Jira ticket, or a set separated by `---`)
     ├── map.md                     ← wayfinder
     ├── questionnaire.md           ← to-questionnaire
     ├── research/<slug>.md         ← research for this item (e.g. wayfinder research tickets)

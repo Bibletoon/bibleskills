@@ -20,7 +20,7 @@ The caller gives you: the Jira issue key, the repository path to inspect, the fi
    - `README.md`, `CLAUDE.md`, `AGENTS.md`, `.serena/memories/*.md` if present.
    - How to run the repository, and how the described circumstance could be verified locally.
    - Targeted search for the code the ticket touches (SKUs, endpoints, functions, files).
-3. **Translate** the human ticket into concrete specifics: endpoints, functions, files, numbers. Strip noise and emotion, keep the essence. A ticket written by `to-jira` already carries AI-Ready section names (Problem, Expected outcome, Known facts, Hypotheses, Acceptance criteria, Non-goals): carry each into the same field (Acceptance criteria → Required checks / Stop conditions), make it concrete against the code as it is now, and note in the summary any component it names that no longer exists or has changed.
+3. **Translate** the human ticket into concrete specifics: endpoints, functions, files, numbers. Strip noise and emotion, keep the essence. A ticket written by `to-jira` comes in a fixed short form; carry its blocks into the task fields (Problem → Problem; Actions → Problem and Expected outcome; Definition of done → Expected outcome, Required checks / Stop conditions; Nuances → Known facts, Constraints or Non-goals; Hypotheses → Hypotheses; Details → Source of truth, and read the linked document if you can reach it), make it concrete against the code as it is now, and note in the summary any component it names that no longer exists or has changed.
 4. **Build the initial minimal task** using the template and field rules from the reference file (its "Template" and "Field rules (decide per task)" sections).
 5. **Save** the file at the path the caller gave, creating its directory if needed.
 

@@ -10,7 +10,7 @@ Write the field contents in the language the user writes in; the template's head
 
 **The task is executed right after it is created**, so concreteness beats durability: file paths, function names, endpoints and short snippets (a schema, a type, a state shape from a prototype) are welcome. If a task is going to sit for a long time, it is re-checked against the current code before execution rather than written vaguely up front.
 
-The exception is a ticket the user files in Jira for later: `to-jira` writes it in a **durable** form (behaviour and component names, no paths or line numbers), using the same section names. `get-task` adds the specifics when the ticket is picked up.
+The exception is a ticket the user files in Jira for later: `to-jira` writes it in a short **durable** form of its own (problem, actions, definition of done; component names, no paths or line numbers). `get-task` maps it onto this template and adds the specifics when the ticket is picked up.
 
 **Key principle: don't fill a field just to tick a box.** Every field guards against a specific failure scenario; if that scenario is impossible for this task, the field **stays empty** (the template structure is always complete, only how much is filled in changes). The simpler the task, the more empty fields. "Fully resolved" doesn't mean "all 9 fields non-empty"; it means **every field is either meaningfully filled or consciously confirmed as not applicable**, and no field is skipped silently.
 
