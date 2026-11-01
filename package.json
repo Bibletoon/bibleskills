@@ -1,0 +1,41 @@
+{
+  "name": "@bibletoon/bibleskills",
+  "version": "3.1.0",
+  "description": "OpenCode V2 plugin with engineering skills and permission-scoped subagents for Windows and macOS",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bibletoon/bibleskills.git"
+  },
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src/",
+    "scripts/bundle.mjs",
+    ".opencode/skills/",
+    ".opencode/agents/bibleskills/",
+    "docs/",
+    "THIRD_PARTY_LICENSES.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.19.0"
+  },
+  "scripts": {
+    "setup": "node scripts/install.mjs",
+    "validate": "node scripts/validate.mjs",
+    "test": "node --test",
+    "check": "npm run validate && npm test",
+    "prepublishOnly": "npm run check"
+  },
+  "dependencies": {
+    "@opencode/plugin": "2.2.5",
+    "jsonc-parser": "3.3.1",
+    "yaml": "2.9.1"
+  }
+}
