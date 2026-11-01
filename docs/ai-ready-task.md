@@ -1,16 +1,16 @@
 # AI-Ready Task
 
-The single agent-task format across the library: `get-task` and `create-task` build it (shared flow in `task-flow.md`), `to-spec` writes specs in it and `to-tickets` writes tickets in it; `implement` and `implement-spec` work from it. This file holds the definition, the template, the per-field rules and the general quality criteria. Skills read this file instead of duplicating it, and may add their own quality criteria and metadata on top (e.g. local verification, grilling, blocking tickets).
+The local, execution-time specification produced by `get-task` and consumed by `implement`: `.agent-docs/work/<id>/task.md` (preparation flow in `task-flow.md`). This is not a tracker ticket. Tracker drafts use the separate format in `durable-ticket.md`. This file holds the local specification's definition, template, per-field rules and quality criteria.
 
 ## What an AI-Ready Task is
 
-An AI-Ready Task is a task (a file under `.agent-docs/work/`, layout in `workspace.md`) that an agent can execute **without reading the source** (the Jira ticket, the conversation with the user, the originating spec). The task identifier is a Jira key (e.g. `MYCOMM-818`), a kebab-case slug (e.g. `add-status-to-orders`), or a ticket number plus slug (e.g. `03-cancel-endpoint`). The task translates a "human" problem statement into specifics (endpoints, functions, files, numbers) and is laid out in a fixed template of 9 fields.
+An AI-Ready Task is a small local specification that an agent can execute **without reading the source ticket or conversation**. Use a confirmed external key when one exists, otherwise a meaningful kebab-case slug; no tracker or key is required for an ordinary description. The task translates the source into current specifics (endpoints, functions, files, numbers) and is laid out in a fixed template of 9 fields. Keep only decision-rich information, not raw source dumps or filler.
 
 Write the field contents in the language the user writes in; the template's headings stay as they are.
 
 **The task is executed right after it is created**, so concreteness beats durability: file paths, function names, endpoints and short snippets (a schema, a type, a state shape from a prototype) are welcome. If a task is going to sit for a long time, it is re-checked against the current code before execution rather than written vaguely up front.
 
-The exception is a ticket the user files in Jira for later: `to-jira` writes it in a short **durable** form of its own (problem, actions, definition of done; component names, no paths or line numbers). `get-task` maps it onto this template and adds the specifics when the ticket is picked up.
+`to-tickets` writes long-lived tracker drafts in `durable-ticket.md` instead. `get-task` accepts one such ticket, an external issue reference/export, or a description from the conversation, checks it against the current repository and adds the execution-time details here. It never rewrites the durable source or changes tracker status as a side effect. A local specification is not a bulk ticket executor.
 
 **Key principle: don't fill a field just to tick a box.** Every field guards against a specific failure scenario; if that scenario is impossible for this task, the field **stays empty** (the template structure is always complete, only how much is filled in changes). The simpler the task, the more empty fields. "Fully resolved" doesn't mean "all 9 fields non-empty"; it means **every field is either meaningfully filled or consciously confirmed as not applicable**, and no field is skipped silently.
 

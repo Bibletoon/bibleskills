@@ -1,6 +1,6 @@
 # Verification before "done"
 
-What counts as evidence that work is finished. `implement` and `implement-spec` point here instead of restating it; which checks to run, and over what scope, is theirs to say. The rule in one line: **no completion claim without fresh evidence you ran yourself and read**.
+What counts as evidence that work is finished. `implement` points here instead of restating it; the local specification defines the required checks and scope. The rule in one line: **no completion claim without fresh evidence you ran yourself and read**.
 
 ## What counts as evidence
 

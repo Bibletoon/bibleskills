@@ -11,6 +11,8 @@ The caller names the diff command, the commit list, and where the code lives:
 
 Read whole files at the reviewed version, not just hunks: a hunk is the starting point, not the evidence. Follow the callers of anything whose contract changed. Never modify the repository.
 
+Run Git inspection through `shell` with the repository as `workdir`, quoting refs and paths for the host shell. Use `--no-ext-diff --no-textconv` with `git diff` and `git show` to avoid external helpers. Reviewer permissions allow only selected Git inspection subcommands, not arbitrary shell commands or editing tools; do not enable pagers, output files or external helpers.
+
 ## Before you write a finding
 
 State the claim to yourself in four parts. If one part is missing, it is not a finding yet:

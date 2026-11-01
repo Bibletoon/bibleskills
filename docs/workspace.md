@@ -17,24 +17,29 @@ Skills point here instead of restating it. When a skill names `GLOSSARY.md`, `GL
 │   └── 0001-<slug>.md             ← architecture decision records
 ├── research/<slug>.md             ← research not tied to a work item
 └── work/<id>/                     ← one directory per work item
-    ├── task.md                    ← get-task / create-task
-    ├── spec.md                    ← to-spec
-    ├── jira.md                    ← to-jira (one Jira ticket, or a set separated by `---`)
+    ├── task.md                    ← get-task: local execution-time specification
     ├── map.md                     ← wayfinder
     ├── questionnaire.md           ← to-questionnaire
     ├── research/<slug>.md         ← research for this item (e.g. wayfinder research tickets)
-    ├── notes/                     ← scratch notes shared by subagents (implement-spec exploration, implementer reports)
+    ├── notes/                     ← supporting notes with lasting project value
     ├── decisions/
     │   └── 01-<slug>.md           ← wayfinder decision tickets (questions to resolve)
     └── issues/
-        ├── 01-<slug>.md           ← to-tickets build tickets (work to implement)
+        ├── 01-<slug>.md           ← to-tickets durable tracker drafts
         └── 02-<slug>.md
 ```
 
-- `<id>` is the Jira key when there is one (`MYCOMM-818`), otherwise a short kebab-case slug of the work's essence (`add-status-to-orders`). An item that grows (task → spec → tickets) keeps its directory.
-- Tickets are one file each, numbered from `01` in dependency order (blockers first), never a single combined file. Decision tickets (`decisions/`) and build tickets (`issues/`) are numbered independently and never mixed: a work item can hold both when a wayfinder map turns into a spec and tickets.
+- `<id>` is a confirmed external issue key when available (`PROJ-123`), otherwise a short kebab-case slug of the work's essence (`add-status-to-orders`). Analysis and its draft set share a directory. Preparing a selected draft for implementation uses a ticket-specific ID (or its published key), so separate tasks never overwrite the same `task.md`.
+- Durable drafts are one file each, numbered from `01` in dependency order (blockers first). Decision tickets (`decisions/`) and durable drafts (`issues/`) are numbered independently and never mixed. A wayfinder map can feed `to-tickets` directly; no intermediate specification is required.
 - Create files and directories lazily, when there is something to write.
-- Write artifact contents in the language the user writes in. Template headings, metadata keys (`Status`, `Blocked by`, `Type`) and status values stay in English, so skills can parse them.
+- Write artifact contents in the language the user writes in. Template headings, metadata keys (`Status`, `Blocked by`, `Type`, `Depends on`) and status values stay in English.
+
+## Two work artifacts
+
+- **Durable tracker draft:** `issues/<NN>-<slug>.md`, format in `durable-ticket.md`. Behavioral outcomes and acceptance criteria, without private code details or local execution status. Dependencies use tracker keys or summary titles. A saved draft is not a dispatch queue; publication requires a separate confirmed request.
+- **Local specification:** `task.md`, format in `ai-ready-task.md`. `get-task` prepares one selected ticket or description against current code; `implement` executes that file. Concrete paths, interfaces and checks belong here. Preparation leaves the source ticket unchanged.
+
+Existing artifacts from older workflows are user data. Read them when explicitly supplied, but never delete, rename or bulk-convert them automatically; agree the destination and scope before replacement.
 
 ## Domain docs
 
@@ -53,9 +58,9 @@ When your output names a domain concept (a task, a ticket title, a refactor prop
 
 If your output contradicts an existing ADR, surface it explicitly rather than silently overriding: _"Contradicts ADR-0007 (event-sourced orders), but worth reopening because…"_
 
-## Metadata lines
+## Wayfinder metadata lines
 
-Tickets carry metadata as bold lines directly under the title:
+Only decision tickets in `decisions/` carry local execution metadata as bold lines directly under the title:
 
 - `**Status:**` one of `ready` → `claimed` → `done`, or `dropped`.
   - `ready`: open, can be grabbed once unblocked.
@@ -63,12 +68,12 @@ Tickets carry metadata as bold lines directly under the title:
   - `done`: resolved. Set it when the work is finished.
   - `dropped`: ruled out (e.g. out of scope); off the frontier for good.
 - `**Blocked by:**` the ticket numbers that gate this one (`01, 03`), or `None`. A ticket is **unblocked** when every ticket it lists is `done` or `dropped`.
-- `**Type:**` wayfinder tickets only: `research` / `prototype` / `grilling` / `task`.
+- `**Type:**` `research` / `prototype` / `grilling` / `task`.
 
-The **frontier** is every ticket in one folder (`issues/` for build tickets, `decisions/` for wayfinder) that is `ready` and unblocked; lowest number first. `Blocked by` numbers refer to tickets in the same folder.
+The **frontier** is every decision ticket in `decisions/` that is `ready` and unblocked; lowest number first. `Blocked by` numbers refer only to that folder. Durable drafts under `issues/` do not use this metadata or frontier; an external tracker owns their execution state after publication.
 
 ## Referring to artifacts
 
-- Refer to another artifact by its path relative to the checkout root (`.agent-docs/work/add-status-to-orders/spec.md`), wrapped in a Markdown link where a human reads it.
+- Refer to another local artifact by its path relative to the checkout root (`.agent-docs/work/add-status-to-orders/task.md`), wrapped in a Markdown link where a human reads it. Durable ticket bodies use shareable references instead, per `durable-ticket.md`.
 - A reference a user passes (a path, an `<id>`, a ticket number within an item) resolves against `.agent-docs/work/`.
 - Notes, answers and history append to the bottom of the file they concern, under a heading (`## Answer`, `## Notes`), rather than living in a separate file.
