@@ -5,7 +5,7 @@ description: "Clean AI-generated code slop (dead code, duplication, needless wra
 
 A bounded cleanup pass for code that works but is bloated, repetitive, over-abstracted or weakly tested, typically right after an agent wrote it. Behaviour stays the same; the diff gets smaller. Ends with an evidence report. Adapted from oh-my-claudecode's `ai-slop-cleaner` (MIT).
 
-Talk to the user, and write the report, in the language the user writes in.
+Present the verification plan, cleanup plan and evidence report in chat, in the user's language. Save them to files only when the user explicitly requests it.
 
 ## When to use
 
@@ -31,11 +31,11 @@ Work only on the scope you were given: an explicit file list, an area, or "the f
 
 ### 1. Lock current behaviour
 
-Identify what must stay the same. Add or run the narrowest regression tests that cover it. If tests can't come first, write down the verification plan (commands, manual checks) before touching code.
+Identify what must stay the same. Add or run the narrowest regression tests that cover it. If tests can't come first, state the verification plan (commands, manual checks) in chat before touching code.
 
-**Done when:** the behaviour to preserve is covered by tests that pass now, or by a written verification plan.
+**Done when:** the behaviour to preserve is covered by tests that pass now, or by a verification plan stated in chat.
 
-### 2. Write a cleanup plan
+### 2. Plan the cleanup in chat
 
 Bound the pass to the scope. Classify every smell you will remove (categories below) and order the work from the safest deletion to the riskiest consolidation.
 
@@ -60,7 +60,7 @@ Run the relevant lint, typecheck and unit/integration tests for the touched area
 
 ### 5. Report
 
-Report, with evidence:
+Report in chat, with evidence:
 
 - **Changed files**
 - **Simplifications**: what was removed or merged, and why

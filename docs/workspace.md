@@ -41,6 +41,10 @@ Skills point here instead of restating it. When a skill names `GLOSSARY.md`, `GL
 
 Existing artifacts from older workflows are user data. Read them when explicitly supplied, but never delete, rename or bulk-convert them automatically; agree the destination and scope before replacement.
 
+## Process output
+
+Plans, progress updates and cleanup/review/verification reports belong in chat, not in project artifacts. Save process output to a file only on an explicit user request; the layout above is a destination rule for requested artifacts, not a requirement to create a work journal. Files that the task itself requires remain deliverables.
+
 ## Domain docs
 
 ### Before exploring, read these
@@ -76,4 +80,4 @@ The **frontier** is every decision ticket in `decisions/` that is `ready` and un
 
 - Refer to another local artifact by its path relative to the checkout root (`.agent-docs/work/add-status-to-orders/task.md`), wrapped in a Markdown link where a human reads it. Durable ticket bodies use shareable references instead, per `durable-ticket.md`.
 - A reference a user passes (a path, an `<id>`, a ticket number within an item) resolves against `.agent-docs/work/`.
-- Notes, answers and history append to the bottom of the file they concern, under a heading (`## Answer`, `## Notes`), rather than living in a separate file.
+- During preparation, append requested answers or clarifications to the file they concern under a heading (`## Answer`, `## Notes`), following that artifact's format. This does not authorize an implementation history or changes to the executor's input specification.

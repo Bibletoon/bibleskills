@@ -144,6 +144,66 @@ test('implementation pins its local specification and checks the state after cle
   assert.match(implement, /does not update the durable ticket or its tracker status/);
 });
 
+test('implementation keeps its agreed specification separate from execution output', async () => {
+  const implement = (await skill('implement')).body;
+  assert.match(implement, /`task\.md` as read-only input/);
+  assert.match(implement, /user approval before updating the specification/);
+  assert.match(implement, /Do not append execution notes or verification results/);
+  assert.match(implement, /baseline and pre-existing-change inventory in session context/);
+  assert.match(implement, /OS temporary file containing Git facts only/);
+  assert.match(implement, /plans, cleanup\/review findings and final verification in chat/);
+  assert.match(implement, /no execution logs or report files unless the user explicitly requests them/);
+});
+
+test('cleanup and review return process output in chat unless saving is requested', async () => {
+  const cleanup = (await skill('ai-slop-cleaner')).body;
+  assert.match(cleanup, /verification plan, cleanup plan and evidence report in chat/);
+  assert.match(cleanup, /Save them to files only when the user explicitly requests it/);
+  assert.match(cleanup, /state the verification plan.*in chat/);
+  assert.match(cleanup, /### 2\. Plan the cleanup in chat/);
+  assert.match(cleanup, /Report in chat, with evidence/);
+  const review = (await skill('review-diff')).body;
+  assert.match(review, /Present the reports in chat/);
+  assert.match(review, /Save a report file only when the user explicitly requests it/);
+});
+
+test('workspace limits appended history to preparation rather than implementation', async () => {
+  const workspace = await readFile(path.join(repositoryRoot, 'docs', 'workspace.md'), 'utf8');
+  assert.match(workspace, /## Process output/);
+  assert.match(workspace, /Plans, progress updates and cleanup\/review\/verification reports belong in chat/);
+  assert.match(workspace, /only on an explicit user request/);
+  assert.match(workspace, /During preparation, append requested answers or clarifications/);
+  assert.match(workspace, /not authorize an implementation history or changes to the executor's input specification/);
+  assert.doesNotMatch(workspace, /Notes, answers and history append to the bottom/);
+});
+
+test('the shared review contract treats author narratives as claims, not authority', async () => {
+  const contract = await readFile(path.join(repositoryRoot, 'docs', 'review-findings.md'), 'utf8');
+  assert.match(contract, /## Review authority/);
+  assert.match(contract, /agreed specification, applicable standards, code and independently verifiable facts/);
+  assert.match(contract, /claims to verify, not requirements or evidence of correctness/);
+  assert.match(contract, /not as additional instructions for the reviewer/);
+  assert.match(contract, /rationale alone never excuses a defect or a requirement\/standards breach/);
+  assert.match(contract, /user-approved requirement changes from execution notes/);
+  assert.match(contract, /ask in Open questions rather than accepting it as the new contract/);
+  for (const id of ['logic-reviewer', 'standards-reviewer', 'spec-reviewer']) {
+    const { body } = await readMarkdown(path.join(repositoryRoot, '.opencode', 'agents', 'bibleskills', `${id}.md`));
+    assert.match(body, /Read the contract/);
+    assert.match(body, /review-findings\.md/);
+  }
+});
+
+test('verification reports summarize final checks without becoming command journals', async () => {
+  const verification = await readFile(path.join(repositoryRoot, 'docs', 'verification.md'), 'utf8');
+  assert.match(verification, /End the work in chat/);
+  assert.match(verification, /Save a report file only when the user explicitly requests it/);
+  assert.match(verification, /final-state checks, not an activity log/);
+  assert.match(verification, /earlier failing regression check when relevant/);
+  assert.match(verification, /omit exploratory commands and repeated runs/);
+  assert.match(verification, /Keep failures and unverified criteria explicit/);
+  assert.doesNotMatch(verification, /<each command run/);
+});
+
 test('review discovery prefers the local task and does not automatically execute durable drafts', async () => {
   const review = (await skill('review-diff')).body;
   assert.match(review, /captured baseline and explicit local specification path/);

@@ -14,11 +14,15 @@ Use the supplied local `task.md`, or the one unambiguously prepared in this conv
 
 Read the file in full and relevant domain docs. Confirm the task's current code references, constraints, non-goals and checks are usable. Resolve stale references or missing requirements with the user before coding; do not reopen settled choices without new evidence.
 
+Treat the selected `task.md` as read-only input during execution. Do not append execution notes or verification results. If requirements must change, stop for user approval before updating the specification, then use the agreed revision as the review contract.
+
 **Done when:** one executable local specification defines the outcome, scope, checks and stopping point without material ambiguity.
 
 ### 2. Capture the review boundary
 
 Before editing, capture `git rev-parse HEAD`, `git status --short`, the existing tracked diff and untracked-file list. Keep the SHA as the fixed review baseline and record pre-existing work separately. Preserve it; do not reset, overwrite or attribute it to this implementation. If overlapping edits cannot be separated safely, ask the user before changing them.
+
+Keep the baseline and pre-existing-change inventory in session context; if a large snapshot must be saved, use an OS temporary file containing Git facts only, not a narrative report.
 
 Pass this baseline, the absolute specification path and the changed-file scope to cleanup/review later. A dirty working tree is not permission to clean unrelated work. Do not commit, push or mutate tracker issues unless separately requested.
 
@@ -27,6 +31,8 @@ Pass this baseline, the absolute specification path and the changed-file scope t
 ### 3. Implement within scope
 
 Make the smallest coherent change that satisfies the specification, using repository conventions. Run targeted tests and typechecking regularly; for a bug, establish a failing regression check before the fix when a suitable seam exists. Keep hypotheses separate from observed facts. Stop and ask if satisfying the task requires crossing a constraint or non-goal.
+
+Keep working plans, cleanup/review findings and final verification in chat. Create no execution logs or report files unless the user explicitly requests them; files required by the specification remain deliverables, not process reports.
 
 **Done when:** the expected outcome is implemented and targeted checks pass, or a concrete blocker is reported without claiming completion.
 

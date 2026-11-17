@@ -74,7 +74,7 @@ Plus, per reviewer:
 
 ### 5. Aggregate
 
-Present the reports under `## Logic`, `## Standards` and `## Spec` headings, verbatim or lightly cleaned, each with its own Open questions and Coverage. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_). Where two axes report the same place, keep both: the agreement is itself a signal.
+Present the reports in chat under `## Logic`, `## Standards` and `## Spec` headings, verbatim or lightly cleaned, each with its own Open questions and Coverage. Save a report file only when the user explicitly requests it. Do **not** merge or rerank findings across axes, because the axes are deliberately separate (see _Why separate axes_). Where two axes report the same place, keep both: the agreement is itself a signal.
 
 End with a one-line summary: total findings per axis, the worst issue _within each axis_ (if any), and how many open questions wait for the user. Don't pick a single winner across axes: that's the reranking the separation exists to prevent.
 

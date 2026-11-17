@@ -1,6 +1,6 @@
 {
   "name": "@bibletoon/bibleskills",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "OpenCode V2 plugin with engineering skills and permission-scoped subagents for Windows and macOS",
   "type": "module",
   "license": "MIT",
